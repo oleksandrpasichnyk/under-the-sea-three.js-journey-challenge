@@ -13,15 +13,15 @@ export default class Ground extends THREE.Group {
 
   private init() {
     const loader = new THREE.TextureLoader();
-    const texture = loader.load('public/ground-alphamap-2.png');
-    const sand = loader.load('public/sand2.png');
+    const texture = loader.load('ground-alphamap-2.png');
+    const sand = loader.load('sand2.png');
     sand.wrapS = THREE.RepeatWrapping;
     sand.wrapT = THREE.RepeatWrapping;
     // const repeatTimes = this.size / 4;
     // sand.repeat.set(repeatTimes, repeatTimes);
 
     const material = new THREE.MeshStandardMaterial({
-      // color: 0xddcc88,
+      color: 0xc9b097,
       map: sand,
       displacementMap: texture,
       // displacementBias: 4,
@@ -32,8 +32,8 @@ export default class Ground extends THREE.Group {
 
     const width = this.size;
     const height = this.size;
-    const xCount = 3;
-    const zCount = 3;
+    const xCount = 10;
+    const zCount = 10;
     const instances = xCount * zCount;
 
     // const instancedMesh = new THREE.Mesh(this.createPart(), material);
@@ -52,7 +52,7 @@ export default class Ground extends THREE.Group {
         const offsetX = i * width;
         const offsetZ = j * height;
 
-        matrix.identity();
+        // matrix.identity();
 
         matrix.setPosition(startX + offsetX, 0, startZ + offsetZ);
         instancedMesh.setMatrixAt(index++, matrix);

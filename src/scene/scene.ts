@@ -4,6 +4,8 @@ import { resizeRendererToDisplaySize } from '../helpers/responsiveness';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import GUI from 'lil-gui';
 import Ground from './environment/ground';
+import Background from './environment/background';
+import TopWater from './environment/water';
 
 const CANVAS_ID = 'scene';
 
@@ -17,6 +19,7 @@ export default class Scene extends THREE.Scene{
   private controls!: OrbitControls;
   private stats!: Stats;
   private gui!: GUI;
+  private water!: TopWater;
 
   constructor() {
     super();
@@ -78,6 +81,15 @@ export default class Scene extends THREE.Scene{
   private setupObjects() {
     const ground = new Ground();
     this.add(ground);
+    ground.position.y = -50;
+    
+    const bg = new Background();
+    this.add(bg)
+
+    const water = this.water = new TopWater();
+    water.setGui(this.gui);
+    this.add(water);
+    water.position.y = 50;
   }
 
   private setupCamera() {
@@ -122,6 +134,7 @@ export default class Scene extends THREE.Scene{
 
   public update(dt: number) {
     this.stats.update();
+    this.water.update(dt);
 
     if (resizeRendererToDisplaySize(this.renderer)) {
       const canvas = this.renderer.domElement;
