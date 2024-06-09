@@ -28,11 +28,11 @@ export default class Scene extends THREE.Scene{
     this.setupRenderer();
     this.setupLoadingManager();
     this.setupLights();
-    this.setupObjects();
     this.setupCamera();
     this.setupControls();
     this.setupStats();
     this.setupGUI();
+    this.setupObjects();
   }
 
   private setupRenderer() {
@@ -64,10 +64,15 @@ export default class Scene extends THREE.Scene{
     const ambientLight = this.ambientLight = new THREE.AmbientLight('white', 0.4);
     this.add(ambientLight);
 
-    const directionalLight = this.directionalLight = new THREE.DirectionalLight(0xeeeeee, 2);
-    directionalLight.position.set(10, 10, 15);
+    const directionalLight = this.directionalLight = new THREE.DirectionalLight(0xeeeeee, 3);
+    directionalLight.position.set(100, 100, 150);
     directionalLight.lookAt(0, 0, 0);
     this.add(directionalLight);
+
+    // light helper
+
+    const helper = new THREE.DirectionalLightHelper(directionalLight);
+    this.add(helper);
   }
 
   private setupObjects() {
@@ -76,8 +81,8 @@ export default class Scene extends THREE.Scene{
   }
 
   private setupCamera() {
-    this.camera = new THREE.PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 0.0001, 1000);
-    this.camera.position.set(2, 2, 5);
+    this.camera = new THREE.PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 0.01, 10000);
+    this.camera.position.set(40, 40, 100);
   }
 
   private setupControls() {
@@ -112,7 +117,7 @@ export default class Scene extends THREE.Scene{
     };
     this.gui.add({ resetGui }, 'resetGui').name('RESET');
 
-    this.gui.close();
+    // this.gui.close();
   }
 
   public update(dt: number) {
