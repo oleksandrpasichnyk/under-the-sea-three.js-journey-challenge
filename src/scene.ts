@@ -1,4 +1,6 @@
-import GUI from 'lil-gui'
+import GUI from 'lil-gui';
+import { Noise } from 'noisejs';
+
 import {
   AmbientLight,
   AxesHelper,
@@ -121,6 +123,48 @@ function init() {
 
     scene.add(cube)
     scene.add(plane)
+
+
+
+    const noise = new Noise(Math.random());
+    const width = 100, height = 100;
+    const widthSegments = 100, heightSegments = 100;
+    const geometry = new PlaneGeometry(width, height, widthSegments, heightSegments);
+
+    // Generate height map
+
+
+    let j = 0;
+
+    setInterval(() => {
+      for (let i = 0; i < geometry.attributes.position.count; i++) {
+        const x = geometry.attributes.position.getX(i + j);
+        const y = geometry.attributes.position.getY(i);
+
+        const s = 5;
+
+        const noiseValue = noise.perlin2(x / s, y / s);; // Math.random() * 0.1; // noise.perlin2(x / 20, y / 20);
+        geometry.attributes.position.setZ(i, noiseValue * 1); // Adjust the multiplier for height variation
+    }
+
+      geometry.computeVertexNormals();
+      geometry.attributes.position.needsUpdate = true;
+      console.log('update')
+
+      j++;
+    }, 100);
+
+    // Create material
+    const material = new MeshStandardMaterial({
+        color: 0x88cc88,
+        wireframe: false,
+    });
+
+    // Create the mesh
+    const plane2 = new Mesh(geometry, material);
+    plane2.rotation.x = -Math.PI / 2; // Rotate to make it flat horizontally
+    plane2.position.y = -1; // Lower the plane to make it below the cube
+    scene.add(plane2);
   }
 
   // ===== 🎥 CAMERA =====
