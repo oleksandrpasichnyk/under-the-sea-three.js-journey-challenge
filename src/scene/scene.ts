@@ -7,6 +7,9 @@ import Ground from './environment/ground';
 import Background from './environment/background';
 import TopWater from './environment/water';
 import { SIZES } from '../config';
+import Fish from './objects/fish';
+import RendererStats from '@xailabs/three-renderer-stats';
+import { LOADER } from '../loader/loader';
 
 const CANVAS_ID = 'scene';
 
@@ -21,6 +24,10 @@ export default class Scene extends THREE.Scene{
   private stats!: Stats;
   private gui!: GUI;
   private water!: TopWater;
+  private ground!: Ground;
+  private bg!: Background;
+
+  private rendererStats!: RendererStats;
 
   constructor() {
     super();
@@ -30,17 +37,30 @@ export default class Scene extends THREE.Scene{
     this.init();
   }
 
-  private init() {
+  private async init() {
     this.setupRenderer();
-    this.setupLoadingManager();
     this.setupLights();
     this.setupCamera();
     this.setupControls();
     this.setupStats();
     this.setupFog();
+
+    
+    await this.setupLoadingManager();
     this.setupObjects();
     this.setupGUI();
+
+    this.initRendererStats();
   }
+
+  private initRendererStats() {
+    const renderStats = this.rendererStats = new RendererStats();
+
+    renderStats.domElement.style.position	= 'absolute'
+    renderStats.domElement.style.left	= '0px'
+    renderStats.domElement.style.bottom	= '0px'
+    document.body.appendChild( renderStats.domElement )
+}
 
   private setupRenderer() {
     this.canvas = document.querySelector(`canvas#${CANVAS_ID}`)!;
@@ -50,21 +70,24 @@ export default class Scene extends THREE.Scene{
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   }
 
-  private setupLoadingManager() {
-    this.loadingManager = new THREE.LoadingManager();
-    this.loadingManager.onStart = () => {
-      console.log('loading started');
-    };
-    this.loadingManager.onProgress = (url, loaded, total) => {
-      console.log('loading in progress:');
-      console.log(`${url} -> ${loaded} / ${total}`);
-    };
-    this.loadingManager.onLoad = () => {
-      console.log('loaded!');
-    };
-    this.loadingManager.onError = () => {
-      console.log('❌ error while loading');
-    };
+  private async setupLoadingManager() {
+    // this.loadingManager = new THREE.LoadingManager();
+    // this.loadingManager.onStart = () => {
+    //   console.log('loading started');
+    // };
+    // this.loadingManager.onProgress = (url, loaded, total) => {
+    //   console.log('loading in progress:');
+    //   console.log(`${url} -> ${loaded} / ${total}`);
+    // };
+    // this.loadingManager.onLoad = () => {
+    //   console.log('loaded!');
+    // };
+    // this.loadingManager.onError = () => {
+    //   console.log('❌ error while loading');
+    // };
+
+    await LOADER.loadAll();
+
   }
 
   private setupLights() {
@@ -83,18 +106,22 @@ export default class Scene extends THREE.Scene{
   }
 
   private setupObjects() {
-    const ground = new Ground();
+    const ground = this.ground = new Ground();
     ground.setGui(this.gui);
     this.add(ground);
     ground.position.y = -50;
     
-    const bg = new Background();
+    const bg = this.bg = new Background();
     this.add(bg)
 
     const water = this.water = new TopWater();
     water.setGui(this.gui);
     this.add(water);
     water.position.y = 50;
+
+
+    const fish = new Fish();
+    this.add(fish);
   }
 
   private setupCamera() {
@@ -119,6 +146,11 @@ export default class Scene extends THREE.Scene{
   }
 
   private setupGUI() {
+    const sceneFolder = this.gui.addFolder('Scene');
+    sceneFolder.add(this.water, 'visible').name('water');
+    sceneFolder.add(this.ground, 'visible').name('ground');
+    sceneFolder.add(this.bg, 'visible').name('background');
+
     const lightsFolder = this.gui.addFolder('Lights');
     lightsFolder.add(this.directionalLight, 'visible').name('directional light');
     lightsFolder.add(this.directionalLight, 'intensity', 0, 10, 0.1).name('intensity');
@@ -150,7 +182,7 @@ export default class Scene extends THREE.Scene{
   }
 
   public update(dt: number) {
-    this.stats.update();
+    this.stats?.update();
     this.water?.update(dt);
 
     if (resizeRendererToDisplaySize(this.renderer)) {
@@ -162,5 +194,7 @@ export default class Scene extends THREE.Scene{
     this.controls.update();
 
     this.renderer.render(this, this.camera);
+
+    this.rendererStats?.update(this.renderer);
   }
 }

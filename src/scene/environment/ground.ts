@@ -1,30 +1,54 @@
 import * as THREE from 'three';
 import { SIZES } from '../../config';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { ALL_ASSETS } from '../../loader/loader';
 
 export default class Ground extends THREE.Group {
   private size: number;
+  private resolution: number;
   private material!: THREE.MeshStandardMaterial;
 
   constructor() {
     super();
-    this.size = 200;
+    this.size = 50;
+    this.resolution = 0.6;
 
     this.init();
   }
 
   public setGui(gui: any) {
-    // const folderGround = gui.addFolder('Ground');
-    // folderGround.addColor(this.material, 'color').name('color').onChange(() => {
-    //   this.material.needsUpdate = true;
+    const folderGround = gui.addFolder('Ground');
+
+    // resolution
+    // folderGround.add(this, 'resolution', 0.1, 1).name('resolution').onChange(() => {
+    //   this.children[0].geometry.dispose();
+    //   this.children[0].material.dispose();
+    //   this.remove(this.children[0]);
+    //   this.init();
+
+    //   // this.material.wireframe = true;
     // });
-    // folderGround.open();
+
+    // size
+    // folderGround.add(this, 'size', 50, 500).name('size').onChange(() => {
+    //   this.remove(this.children[0]);
+    //   this.init();
+    // });
+
+    folderGround.add(this.material, 'wireframe').name('wireframe').onChange(() => {
+      this.material.needsUpdate = true;
+    });
+    folderGround.add(this.material, 'displacementScale', 0, 10).name('displacementScale').onChange(() => {
+      this.material.needsUpdate = true;
+    });
+    folderGround.addColor(this.material, 'color').name('color').onChange(() => {
+      this.material.needsUpdate = true;
+    });
+    folderGround.open();
   }
 
   private init() {
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load('ground-alphamap-2.png');
-    const sand = loader.load('sand2.png');
+    const texture = ALL_ASSETS.textures['ground/ground-alphamap-2.png'];
+    const sand = ALL_ASSETS.textures['ground/sand2.png'];
     sand.wrapS = THREE.RepeatWrapping;
     sand.wrapT = THREE.RepeatWrapping;
     // const repeatTimes = this.size / 4;
@@ -70,28 +94,14 @@ export default class Ground extends THREE.Group {
 
     this.add(instancedMesh);
 
-    this.addAsset();
-  }
-
-  private addAsset() {
-    const loader = new GLTFLoader();
-    loader.load('models/Clownfish.glb', (gltf) => {
-      console.log('load', gltf)
-      const tree = gltf.scene;
-
-      const s = 10;
-      tree.scale.set(s, s, s);
-
-      tree.position.set(0, 0, 0);
-      this.add(tree);
-    });
+    console.log('vertices', instancedMesh.geometry.attributes.position.count);
   }
 
   private createPartGeometry() {
     const width = this.size;
     const height = this.size;
 
-    const res = 1;
+    const res = this.resolution;
 
     const widthSegments = this.size * res;
     const heightSegments = this.size * res;
