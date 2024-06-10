@@ -1,14 +1,24 @@
 import * as THREE from 'three';
+import { SIZES } from '../../config';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 export default class Ground extends THREE.Group {
-
   private size: number;
+  private material!: THREE.MeshStandardMaterial;
 
   constructor() {
     super();
-    this.size = 100;
+    this.size = 200;
 
     this.init();
+  }
+
+  public setGui(gui: any) {
+    // const folderGround = gui.addFolder('Ground');
+    // folderGround.addColor(this.material, 'color').name('color').onChange(() => {
+    //   this.material.needsUpdate = true;
+    // });
+    // folderGround.open();
   }
 
   private init() {
@@ -20,20 +30,19 @@ export default class Ground extends THREE.Group {
     // const repeatTimes = this.size / 4;
     // sand.repeat.set(repeatTimes, repeatTimes);
 
-    const material = new THREE.MeshStandardMaterial({
-      color: 0xc9b097,
+    const material = this.material = new THREE.MeshStandardMaterial({
+      color: 0xcaa341,
       map: sand,
       displacementMap: texture,
-      // displacementBias: 4,
-      displacementScale: 4,
+      displacementScale: 3,
       // flatShading: true,
       // depthTest: false,
     });
 
     const width = this.size;
     const height = this.size;
-    const xCount = 10;
-    const zCount = 10;
+    const xCount = Math.ceil(SIZES.width/this.size);
+    const zCount = Math.ceil(SIZES.length/this.size);
     const instances = xCount * zCount;
 
     // const instancedMesh = new THREE.Mesh(this.createPart(), material);
@@ -60,6 +69,22 @@ export default class Ground extends THREE.Group {
     }
 
     this.add(instancedMesh);
+
+    this.addAsset();
+  }
+
+  private addAsset() {
+    const loader = new GLTFLoader();
+    loader.load('models/Clownfish.glb', (gltf) => {
+      console.log('load', gltf)
+      const tree = gltf.scene;
+
+      const s = 10;
+      tree.scale.set(s, s, s);
+
+      tree.position.set(0, 0, 0);
+      this.add(tree);
+    });
   }
 
   private createPartGeometry() {

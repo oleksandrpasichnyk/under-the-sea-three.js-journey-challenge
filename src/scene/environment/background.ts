@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import Scene from '../scene';
+import { SIZES } from '../../config';
 
 export default class Background extends THREE.Group {
   constructor() {
@@ -22,7 +23,7 @@ export default class Background extends THREE.Group {
 
     // texture.rotation = Math.PI;
 
-    const geometry = new THREE.SphereGeometry(500, 60, 60);
+    const geometry = new THREE.SphereGeometry(SIZES.width * 0.5, 60, 60);
     const material = new THREE.MeshBasicMaterial({ envMap: texture, envMapRotation: new THREE.Euler(Math.PI, 0, 0), side: THREE.BackSide });
     const mesh = new THREE.Mesh(geometry, material);
 

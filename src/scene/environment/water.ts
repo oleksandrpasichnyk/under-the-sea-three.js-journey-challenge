@@ -1,8 +1,8 @@
 import { Noise } from 'noisejs';
 import * as THREE from 'three';
 // import { Water as WaterObject } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/objects/Water2.js';
-import { Water } from 'three/addons/objects/Water.js';
-
+import { Water } from 'three/examples/jsm/objects/Water';
+import { SIZES } from '../../config';
 
 export default class TopWater extends THREE.Group {
   private noise: Noise;
@@ -10,7 +10,7 @@ export default class TopWater extends THREE.Group {
 
   private params: any;
   private size: number;
-  private water: Water;
+  private water!: Water;
 
   constructor() {
     super();
@@ -35,33 +35,55 @@ export default class TopWater extends THREE.Group {
     const waterUniforms = this.water.material.uniforms;
 
     const folderWater = gui.addFolder( 'Water' );
-    folderWater.add( waterUniforms.distortionScale, 'value', 0, 8, 0.1 ).name( 'distortionScale' );
-    folderWater.add( waterUniforms.size, 'value', 0.1, 10, 0.1 ).name( 'size' );
+    folderWater.add( waterUniforms.distortionScale, 'value', 0, 50, 0.1 ).name( 'distortionScale' );
+    folderWater.add( waterUniforms.size, 'value', 0.01, 5, 0.1 ).name( 'size' );
+    folderWater.add( waterUniforms.alpha, 'value', 0.0, 1, .001 ).name( 'alpha' );
+    folderWater.addColor( waterUniforms.waterColor, 'value' ).name( 'waterColor' );
+    folderWater.addColor( waterUniforms.sunColor, 'value' ).name( 'sunColor' );
     folderWater.open();
+
+
+    // textureWidth?: number;
+    // textureHeight?: number;
+    // clipBias?: number;
+    // alpha?: number;
+    // time?: number;
+    // waterNormals?: Texture;
+    // sunDirection?: Vector3;
+    // sunColor?: ColorRepresentation;
+    // waterColor?: ColorRepresentation;
+    // eye?: Vector3;
+    // distortionScale?: number;
+    // side?: Side;
+    // fog?: boolean;
   }
 
   private init2() {
-    const waterGeometry = new THREE.PlaneGeometry( 1000, 1000 );
+    const waterGeometry = new THREE.PlaneGeometry( SIZES.width, SIZES.length );
 
     const water = this.water = new Water(
       waterGeometry,
       {
         textureWidth: 512,
         textureHeight: 512,
-        waterNormals: new THREE.TextureLoader().load( 'textures/water/Water_1_M_Normal.jpg', function ( texture ) {
+        waterNormals: new THREE.TextureLoader().load( 'textures/water/water3.jpg', function ( texture ) {
 
           texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-          texture.repeat.set( 1, 1 );
+          // texture.repeat.set( 1, 1 );
         } ),
         sunDirection: new THREE.Vector3(),
-        sunColor: 0x00ffff,
-        waterColor: 0x001e0f,
-        distortionScale: 3.7,
-        // fog: scene.fog !== undefined
+        sunColor: 0xffffff,
+        waterColor: 0x0061ff,
+        distortionScale: 30,
+        fog: true,
+        eye: new THREE.Vector3(0, 0, 0),
       }
     );
 
+    water.material.uniforms.size.value = 0.5;
     water.rotation.x = - Math.PI * 1.5;
+
+    console.log(water.material.uniforms)
 
     this.add( water );
   }

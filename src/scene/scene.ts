@@ -6,6 +6,7 @@ import GUI from 'lil-gui';
 import Ground from './environment/ground';
 import Background from './environment/background';
 import TopWater from './environment/water';
+import { SIZES } from '../config';
 
 const CANVAS_ID = 'scene';
 
@@ -24,6 +25,8 @@ export default class Scene extends THREE.Scene{
   constructor() {
     super();
 
+    this.gui = new GUI();
+
     this.init();
   }
 
@@ -34,8 +37,9 @@ export default class Scene extends THREE.Scene{
     this.setupCamera();
     this.setupControls();
     this.setupStats();
-    this.setupGUI();
+    this.setupFog();
     this.setupObjects();
+    this.setupGUI();
   }
 
   private setupRenderer() {
@@ -64,10 +68,10 @@ export default class Scene extends THREE.Scene{
   }
 
   private setupLights() {
-    const ambientLight = this.ambientLight = new THREE.AmbientLight('white', 0.4);
+    const ambientLight = this.ambientLight = new THREE.AmbientLight('white', 4);
     this.add(ambientLight);
 
-    const directionalLight = this.directionalLight = new THREE.DirectionalLight(0xeeeeee, 3);
+    const directionalLight = this.directionalLight = new THREE.DirectionalLight(0xeeeeee, 6);
     directionalLight.position.set(100, 100, 150);
     directionalLight.lookAt(0, 0, 0);
     this.add(directionalLight);
@@ -80,6 +84,7 @@ export default class Scene extends THREE.Scene{
 
   private setupObjects() {
     const ground = new Ground();
+    ground.setGui(this.gui);
     this.add(ground);
     ground.position.y = -50;
     
@@ -109,11 +114,23 @@ export default class Scene extends THREE.Scene{
     document.body.appendChild(this.stats.dom);
   }
 
+  private setupFog() {
+    this.fog = new THREE.Fog(0x001e57, 80, SIZES.length);
+  }
+
   private setupGUI() {
-    this.gui = new GUI();
     const lightsFolder = this.gui.addFolder('Lights');
     lightsFolder.add(this.directionalLight, 'visible').name('directional light');
+    lightsFolder.add(this.directionalLight, 'intensity', 0, 10, 0.1).name('intensity');
+    lightsFolder.addColor(this.directionalLight, 'color').name('color');
     lightsFolder.add(this.ambientLight, 'visible').name('ambient light');
+    lightsFolder.add(this.ambientLight, 'intensity', 0, 10, 0.1).name('ambientLight intensity');
+
+    const fogFolder = this.gui.addFolder('Fog');
+    // fogFolder.add(this.fog!, 'visible').name('fog');
+    fogFolder.addColor(this.fog!, 'color').name('color');
+    fogFolder.add(this.fog!, 'near', 0, 1000, 1).name('near');
+    fogFolder.add(this.fog!, 'far', 0, 1000, 1).name('far');
 
     this.gui.onFinishChange(() => {
       const guiState = this.gui.save();
@@ -134,7 +151,7 @@ export default class Scene extends THREE.Scene{
 
   public update(dt: number) {
     this.stats.update();
-    this.water.update(dt);
+    this.water?.update(dt);
 
     if (resizeRendererToDisplaySize(this.renderer)) {
       const canvas = this.renderer.domElement;
