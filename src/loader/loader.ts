@@ -68,7 +68,7 @@ class Loader {
         loader.load(
           `${modelName}`, // Adjust path as needed
           (gltf) => {
-            (ALL_ASSETS.models as ModelAssets)[modelName] = gltf.scene;
+            (ALL_ASSETS.models as ModelAssets)[modelName] = gltf;
             resolve();
           },
           undefined,

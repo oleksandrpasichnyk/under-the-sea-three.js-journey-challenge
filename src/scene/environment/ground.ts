@@ -7,6 +7,8 @@ export default class Ground extends THREE.Group {
   private resolution: number;
   private material!: THREE.MeshStandardMaterial;
 
+  private view!: THREE.InstancedMesh;
+
   constructor() {
     super();
     this.size = 50;
@@ -19,60 +21,72 @@ export default class Ground extends THREE.Group {
     const folderGround = gui.addFolder('Ground');
 
     // resolution
-    // folderGround.add(this, 'resolution', 0.1, 1).name('resolution').onChange(() => {
-    //   this.children[0].geometry.dispose();
-    //   this.children[0].material.dispose();
-    //   this.remove(this.children[0]);
-    //   this.init();
-
-    //   // this.material.wireframe = true;
-    // });
+    folderGround.add(this, 'resolution', 0.1, 10).name('resolution').onChange(() => {
+      this.resetView();
+    });
 
     // size
-    // folderGround.add(this, 'size', 50, 500).name('size').onChange(() => {
-    //   this.remove(this.children[0]);
-    //   this.init();
-    // });
+    folderGround.add(this, 'size', 50, 5000).name('size').onChange(() => {
+      this.resetView();
+    });
+
+    folderGround.add(this.material, 'flatShading').name('flatShading').onChange(() => {
+      this.material.needsUpdate = true;
+    });
 
     folderGround.add(this.material, 'wireframe').name('wireframe').onChange(() => {
       this.material.needsUpdate = true;
     });
-    folderGround.add(this.material, 'displacementScale', 0, 10).name('displacementScale').onChange(() => {
+
+    folderGround.add(this.material, 'displacementScale', 0, 100).name('displacementScale').onChange(() => {
       this.material.needsUpdate = true;
     });
+
     folderGround.addColor(this.material, 'color').name('color').onChange(() => {
       this.material.needsUpdate = true;
     });
+
+    folderGround.add(this.view.position, 'y', -50, 50).name('y:').onChange((y) => {
+      this.view.position.y = y;
+    });
+
     folderGround.open();
   }
 
+  private resetView() {
+    this.view.geometry.dispose();
+    this.remove(this.view);
+    this.initView();
+  }
+
   private init() {
+    this.initMaterial();
+
+    this.initView();
+  }
+
+  private initMaterial() {
     const texture = ALL_ASSETS.textures['ground/ground-alphamap-2.png'];
     const sand = ALL_ASSETS.textures['ground/sand2.png'];
     sand.wrapS = THREE.RepeatWrapping;
     sand.wrapT = THREE.RepeatWrapping;
-    // const repeatTimes = this.size / 4;
-    // sand.repeat.set(repeatTimes, repeatTimes);
 
-    const material = this.material = new THREE.MeshStandardMaterial({
+    this.material = new THREE.MeshStandardMaterial({
       color: 0xcaa341,
       map: sand,
       displacementMap: texture,
       displacementScale: 3,
-      // flatShading: true,
-      // depthTest: false,
     });
+  }
 
+  private initView() {
     const width = this.size;
     const height = this.size;
     const xCount = Math.ceil(SIZES.width/this.size);
     const zCount = Math.ceil(SIZES.length/this.size);
     const instances = xCount * zCount;
 
-    // const instancedMesh = new THREE.Mesh(this.createPart(), material);
-
-
-    const instancedMesh = new THREE.InstancedMesh(this.createPartGeometry(), material, instances);
+    const view = this.view = new THREE.InstancedMesh(this.createPartGeometry(), this.material, instances);
 
     const matrix = new THREE.Matrix4();
     let index = 0;
@@ -88,13 +102,13 @@ export default class Ground extends THREE.Group {
         // matrix.identity();
 
         matrix.setPosition(startX + offsetX, 0, startZ + offsetZ);
-        instancedMesh.setMatrixAt(index++, matrix);
+        view.setMatrixAt(index++, matrix);
       }
     }
 
-    this.add(instancedMesh);
+    this.add(view);
 
-    console.log('vertices', instancedMesh.geometry.attributes.position.count);
+    console.log('vertices', view.geometry.attributes.position.count);
   }
 
   private createPartGeometry() {

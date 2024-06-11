@@ -7,16 +7,15 @@ import Ground from './environment/ground';
 import Background from './environment/background';
 import TopWater from './environment/water';
 import { SIZES } from '../config';
-import Fish from './objects/fish';
 import RendererStats from '@xailabs/three-renderer-stats';
 import { LOADER } from '../loader/loader';
+import Test from './test/test';
 
 const CANVAS_ID = 'scene';
 
 export default class Scene extends THREE.Scene{
   private canvas!: HTMLElement;
   private renderer!: THREE.WebGLRenderer;
-  private loadingManager!: THREE.LoadingManager;
   private ambientLight!: THREE.AmbientLight;
   private directionalLight!: THREE.DirectionalLight;
   private camera!: THREE.PerspectiveCamera;
@@ -26,6 +25,7 @@ export default class Scene extends THREE.Scene{
   private water!: TopWater;
   private ground!: Ground;
   private bg!: Background;
+  private test!: Test;
 
   private rendererStats!: RendererStats;
 
@@ -109,7 +109,7 @@ export default class Scene extends THREE.Scene{
     const ground = this.ground = new Ground();
     ground.setGui(this.gui);
     this.add(ground);
-    ground.position.y = -50;
+    ground.position.y = -10;
     
     const bg = this.bg = new Background();
     this.add(bg)
@@ -119,9 +119,8 @@ export default class Scene extends THREE.Scene{
     this.add(water);
     water.position.y = 50;
 
-
-    const fish = new Fish();
-    this.add(fish);
+    const test = this.test = new Test();
+    this.add(test);
   }
 
   private setupCamera() {
@@ -133,6 +132,12 @@ export default class Scene extends THREE.Scene{
     this.controls = new OrbitControls(this.camera, this.canvas);
     this.controls.enableDamping = true;
     this.controls.autoRotate = false;
+
+    // set zoom steps
+
+    this.controls.minDistance = 1;
+    this.controls.maxDistance = 2000;
+
     this.controls.update();
   }
 
@@ -184,6 +189,7 @@ export default class Scene extends THREE.Scene{
   public update(dt: number) {
     this.stats?.update();
     this.water?.update(dt);
+    this.test?.update(dt);
 
     if (resizeRendererToDisplaySize(this.renderer)) {
       const canvas = this.renderer.domElement;

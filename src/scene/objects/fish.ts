@@ -1,33 +1,20 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import ThreeHelper from '../../helpers/three-hepler';
 
 export default class Fish extends THREE.Group {
-  constructor() {
+  constructor(modelName: string) {
     super();
 
-    this.init();
+    modelName = 'models/Clownfish.glb';
+
+    this.init(modelName);
   }
 
-  private init() {
-    const loader = new GLTFLoader();
-    loader.load('models/Clownfish.glb', (gltf: any) => {
-      const view = gltf.scene;
+  private init(modelName: string) {
+    const view = THREE.Cache.get(modelName).scene;
+    ThreeHelper.makeModelDoubleSide(view);
 
-      const s = 2;
-      view.scale.set(s, s, s);
-
-      // tree.position.set(0, 0, 0);
-      this.add(view);
-
-
-      // traverse view
-
-      view.traverse((child: any) => {
-        if (child.isMesh) {
-          child.material.side = THREE.DoubleSide;
-        }
-      });
-    });
+    this.add(view);
   }
 
 
