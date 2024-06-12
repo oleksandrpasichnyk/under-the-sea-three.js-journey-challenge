@@ -15,13 +15,16 @@ export default class Fish extends THREE.Group {
   private mixer?: FishAnimationsController;
   private realSpeedDisplay!: any;
 
+  private line!: THREE.Line;
+
   private _speed: number = 0;
+  private _angle: THREE.Euler = new THREE.Euler();
+
   private _maxSpeed: number = 220;
   private _acceleration: number = 35;
-  private _deceleration: number = 15;
+  private _deceleration: number = 30;
   private _rotationSpeed: number = 3;
-  private _angle: THREE.Euler = new THREE.Euler();
-  private _rotationLerp: number = 0.9;
+  private _rotationLerp: number = 0.2;
   private _breakSpeed: number = 100;
 
   private _realSpeed: number = 0;
@@ -108,10 +111,12 @@ export default class Fish extends THREE.Group {
 
   public update(dt: number) {
     if (this.keyStates[KEYS.UP]) {
-        this._speed += this._acceleration * dt;
+        this._speed += (this._speed > 0 ? this._acceleration : this._breakSpeed) * dt;
         this._speed = Math.min(this._speed, this._maxSpeed);
     } else if (this.keyStates[KEYS.DOWN]) {
-        this._speed -= this._breakSpeed * dt;
+        // this._speed -= this._breakSpeed * dt;
+        this._speed -= (this._speed > 0 ? this._breakSpeed : this._acceleration) * dt;
+
         this._speed = Math.max(this._speed, -this._maxSpeed);
     } else {
         if (this._speed > 0) {
