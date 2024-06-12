@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import ThreeHelper from "../../helpers/three-hepler";
+import ThreeHelper from "../../../helpers/three-hepler";
 
 interface Actions {
   [key: string]: THREE.AnimationAction;

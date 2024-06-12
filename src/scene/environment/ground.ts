@@ -46,11 +46,11 @@ export default class Ground extends THREE.Group {
       this.material.needsUpdate = true;
     });
 
-    folderGround.add(this.view.position, 'y', -50, 50).name('y:').onChange((y) => {
+    folderGround.add(this.view.position, 'y', -50, 50).name('y:').onChange((y: number) => {
       this.view.position.y = y;
     });
 
-    folderGround.open();
+    folderGround.close();
   }
 
   private resetView() {
@@ -66,6 +66,7 @@ export default class Ground extends THREE.Group {
   }
 
   private initMaterial() {
+    // const texture = ALL_ASSETS.textures['ground/ground-noise.jpg'];
     const texture = ALL_ASSETS.textures['ground/ground-alphamap-2.png'];
     const sand = ALL_ASSETS.textures['ground/sand2.png'];
     sand.wrapS = THREE.RepeatWrapping;

@@ -10,6 +10,8 @@ import { SIZES } from '../config';
 import RendererStats from '@xailabs/three-renderer-stats';
 import { LOADER } from '../loader/loader';
 import Test from './test/test';
+import Fish from './objects/fish/fish-view';
+import CameraController from './controllers/camera-controller';
 
 const CANVAS_ID = 'scene';
 
@@ -26,6 +28,9 @@ export default class Scene extends THREE.Scene{
   private ground!: Ground;
   private bg!: Background;
   private test!: Test;
+  private fish!: Fish;
+
+  private cameraController!: CameraController;
 
   private rendererStats!: RendererStats;
 
@@ -48,6 +53,7 @@ export default class Scene extends THREE.Scene{
     
     await this.setupLoadingManager();
     this.setupObjects();
+    this.initCameraController();
     this.setupGUI();
 
     this.initRendererStats();
@@ -119,8 +125,12 @@ export default class Scene extends THREE.Scene{
     this.add(water);
     water.position.y = 50;
 
-    const test = this.test = new Test();
-    this.add(test);
+    // const test = this.test = new Test();
+    // this.add(test);
+
+    const fish = this.fish = new Fish('');
+    this.add(fish);
+    fish.setGUI(this.gui);
   }
 
   private setupCamera() {
@@ -141,6 +151,11 @@ export default class Scene extends THREE.Scene{
     this.controls.update();
   }
 
+  private initCameraController() {
+    this.cameraController = new CameraController(this.camera, this.fish);
+    this.cameraController.setGUI(this.gui);
+  }
+
   private setupStats() {
     this.stats = new Stats();
     document.body.appendChild(this.stats.dom);
@@ -156,6 +171,8 @@ export default class Scene extends THREE.Scene{
     sceneFolder.add(this.ground, 'visible').name('ground');
     sceneFolder.add(this.bg, 'visible').name('background');
 
+    sceneFolder.close();
+
     const lightsFolder = this.gui.addFolder('Lights');
     lightsFolder.add(this.directionalLight, 'visible').name('directional light');
     lightsFolder.add(this.directionalLight, 'intensity', 0, 10, 0.1).name('intensity');
@@ -163,11 +180,15 @@ export default class Scene extends THREE.Scene{
     lightsFolder.add(this.ambientLight, 'visible').name('ambient light');
     lightsFolder.add(this.ambientLight, 'intensity', 0, 10, 0.1).name('ambientLight intensity');
 
+    lightsFolder.close();
+
     const fogFolder = this.gui.addFolder('Fog');
     // fogFolder.add(this.fog!, 'visible').name('fog');
     fogFolder.addColor(this.fog!, 'color').name('color');
     fogFolder.add(this.fog!, 'near', 0, 1000, 1).name('near');
     fogFolder.add(this.fog!, 'far', 0, 1000, 1).name('far');
+
+    fogFolder.close();
 
     this.gui.onFinishChange(() => {
       const guiState = this.gui.save();
@@ -190,6 +211,7 @@ export default class Scene extends THREE.Scene{
     this.stats?.update();
     this.water?.update(dt);
     this.test?.update(dt);
+    this.fish?.update(dt);
 
     if (resizeRendererToDisplaySize(this.renderer)) {
       const canvas = this.renderer.domElement;
@@ -197,7 +219,9 @@ export default class Scene extends THREE.Scene{
       this.camera.updateProjectionMatrix();
     }
 
-    this.controls.update();
+    this.cameraController?.update(dt);
+
+    // this.controls.update();
 
     this.renderer.render(this, this.camera);
 

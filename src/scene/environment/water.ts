@@ -22,7 +22,7 @@ export default class TopWater extends THREE.Group {
     folderWater.add( waterUniforms.alpha, 'value', 0.0, 1, .001 ).name( 'alpha' );
     folderWater.addColor( waterUniforms.waterColor, 'value' ).name( 'waterColor' );
     folderWater.addColor( waterUniforms.sunColor, 'value' ).name( 'sunColor' );
-    folderWater.open();
+    folderWater.close();
   }
 
   private init2() {
