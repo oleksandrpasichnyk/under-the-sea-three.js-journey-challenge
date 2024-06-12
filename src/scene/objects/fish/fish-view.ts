@@ -16,14 +16,16 @@ export default class Fish extends THREE.Group {
   private realSpeedDisplay!: any;
 
   private _speed: number = 0;
-  private _maxSpeed: number = 80;
-  private _acceleration: number = 50;
+  private _maxSpeed: number = 220;
+  private _acceleration: number = 35;
   private _deceleration: number = 15;
   private _rotationSpeed: number = 3;
   private _angle: THREE.Euler = new THREE.Euler();
   private _rotationLerp: number = 0.9;
+  private _breakSpeed: number = 100;
 
   private _realSpeed: number = 0;
+  private _boundingBox!: THREE.Vector3;
 
   private keyStates: any;
 
@@ -38,11 +40,24 @@ export default class Fish extends THREE.Group {
     this.init(modelName);
   }
 
+  get width() {
+    return this._boundingBox.x;
+  }
+
+  get height() {
+    return this._boundingBox.y;
+  }
+
+  get length() {
+    return this._boundingBox.z;
+  }
+
   public setGUI(gui: any) {
     const folderFish = gui.addFolder('Fish');
 
     this.realSpeedDisplay = folderFish.add(this, '_realSpeed').name('Real speed');
-    folderFish.add(this, '_maxSpeed', 0, 100).name('Max speed');
+    folderFish.add(this, '_maxSpeed', 0, 300).name('Max speed');
+    folderFish.add(this, '_breakSpeed', 0, 300).name('Break speed');
     folderFish.add(this, '_acceleration', 0, 100).name('Acceleration');
     folderFish.add(this, '_deceleration', 0, 100).name('Deceleration');
     folderFish.add(this, '_rotationSpeed', 0, 20).name('Rotation Speed');
@@ -54,6 +69,14 @@ export default class Fish extends THREE.Group {
   private init(modelName: string) {
     this.initView(modelName);
     this.setupEvents();
+
+    this._boundingBox = new THREE.Box3().setFromObject(this.view).getSize(new THREE.Vector3());
+
+    const line = this.line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -10)]), new THREE.LineBasicMaterial({ color: 0xff0000 }));
+    
+    setTimeout(() => {
+      this.parent?.add(line);
+    }, 500);
   }
 
   private initView(modelName: string) {
@@ -88,7 +111,7 @@ export default class Fish extends THREE.Group {
         this._speed += this._acceleration * dt;
         this._speed = Math.min(this._speed, this._maxSpeed);
     } else if (this.keyStates[KEYS.DOWN]) {
-        this._speed -= this._acceleration * dt;
+        this._speed -= this._breakSpeed * dt;
         this._speed = Math.max(this._speed, -this._maxSpeed);
     } else {
         if (this._speed > 0) {
@@ -120,6 +143,10 @@ export default class Fish extends THREE.Group {
 
     this.mixer?.setTimeScaleMoveSpeed(5 * this._realSpeed/this._maxSpeed);
     this.mixer?.update(dt);
+
+
+    this.line.position.copy(this.position);
+    this.line.lookAt(this.position.clone().add(direction.clone().add(new THREE.Vector3(0, -0.002, 0)).negate()));
   }
   
 

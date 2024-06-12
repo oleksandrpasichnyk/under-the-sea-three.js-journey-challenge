@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import Fish from '../objects/fish/fish-view';
 
 const enum POV {
   FIRST_PERSON = 'First person',
@@ -7,13 +8,13 @@ const enum POV {
 
 export default class CameraController {
   private camera: THREE.PerspectiveCamera;
-  private player: THREE.Object3D;
+  private player: Fish;
   private offset: THREE.Vector3;
 
   private pov: POV;
   private prewPov: POV;
 
-  constructor(camera: THREE.PerspectiveCamera, player: THREE.Object3D) {
+  constructor(camera: THREE.PerspectiveCamera, player: Fish) {
     this.camera = camera;
     this.player = player;
 
@@ -40,7 +41,7 @@ export default class CameraController {
       this.prewPov = this.pov;
       switch (this.pov) {
         case POV.FIRST_PERSON:
-          this.offset.set(0, 0, -2);
+          this.offset.set(0, 0, -this.player.length * 0.5 - 2);
 
           break;
         case POV.THIRD_PERSON:
@@ -55,13 +56,23 @@ export default class CameraController {
       
       this.camera.position.lerp(desiredPosition, this.getLerp()); // The lerp factor can be adjusted for smoother or quicker follow
 
+      // if(this.pov === POV.FIRST_PERSON){
+      //   this.camera.rotation.copy(this.player.rotation);
+      // }else{
+      //   this.camera.lookAt(this.getLookAtTarget());
+      // }
+
+
       this.camera.lookAt(this.getLookAtTarget());
     }
   }
 
   getLookAtTarget() {
-    return this.pov === POV.THIRD_PERSON ? this.player.position :
-    this.player.position.clone().add(new THREE.Vector3(0, 0, -2)).applyQuaternion(this.player.quaternion)
+    const desiredPosition = new THREE.Vector3().copy(this.player.position);
+    const offsetRotated = new THREE.Vector3(0, 0, -this.player.length * 0.5 - 4).applyQuaternion(this.player.quaternion);
+    desiredPosition.add(offsetRotated);
+
+    return this.pov === POV.THIRD_PERSON ? this.player.position : desiredPosition;
   }
 
   getLerp() {
