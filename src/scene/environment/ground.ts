@@ -12,7 +12,7 @@ export default class Ground extends THREE.Group {
   constructor() {
     super();
     this.size = 50;
-    this.resolution = 0.6;
+    this.resolution = 0.5;
 
     this.init();
   }
@@ -21,12 +21,12 @@ export default class Ground extends THREE.Group {
     const folderGround = gui.addFolder('Ground');
 
     // resolution
-    folderGround.add(this, 'resolution', 0.1, 10).name('resolution').onChange(() => {
+    folderGround.add(this, 'resolution', 0.1, 10, 0.01).name('resolution').onChange(() => {
       this.resetView();
     });
 
     // size
-    folderGround.add(this, 'size', 50, 5000).name('size').onChange(() => {
+    folderGround.add(this, 'size', 2, 300).name('size').onChange(() => {
       this.resetView();
     });
 
@@ -38,7 +38,7 @@ export default class Ground extends THREE.Group {
       this.material.needsUpdate = true;
     });
 
-    folderGround.add(this.material, 'displacementScale', 0, 100).name('displacementScale').onChange(() => {
+    folderGround.add(this.material, 'displacementScale', 0, 5, 0.01).name('displacementScale').onChange(() => {
       this.material.needsUpdate = true;
     });
 
@@ -72,6 +72,9 @@ export default class Ground extends THREE.Group {
     sand.wrapS = THREE.RepeatWrapping;
     sand.wrapT = THREE.RepeatWrapping;
 
+    //set texture scale
+    sand.repeat.set(1, 1);
+
     this.material = new THREE.MeshStandardMaterial({
       color: 0xcaa341,
       map: sand,
@@ -95,10 +98,12 @@ export default class Ground extends THREE.Group {
     const startX = -width * (xCount - 1) * 0.5;
     const startZ = -height * (zCount - 1);
 
+    const offset = -0.01;
+
     for (let i = 0; i < xCount; i++) {
       for (let j = 0; j < zCount; j++) {
-        const offsetX = i * width;
-        const offsetZ = j * height;
+        const offsetX = i * (width + offset);
+        const offsetZ = j * (height + offset);
 
         // matrix.identity();
 
@@ -109,7 +114,7 @@ export default class Ground extends THREE.Group {
 
     this.add(view);
 
-    console.log('vertices', view.geometry.attributes.position.count);
+    // console.log('vertices', view.geometry.attributes.position.count);
   }
 
   private createPartGeometry() {

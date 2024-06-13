@@ -23,7 +23,7 @@ export default class CameraController {
 
     this.offsetsConfig = {
       [POV.FIRST_PERSON]: new THREE.Vector3(0, 0, -this.player.length * 0.5 - 2),
-      [POV.THIRD_PERSON]: new THREE.Vector3(0, 7.2, 23),
+      [POV.THIRD_PERSON]: new THREE.Vector3(0, 1.44, 4.6),
     }
 
     document.addEventListener('keydown', (event) => {
@@ -39,9 +39,9 @@ export default class CameraController {
 
   setGUI(gui: any) {
     const folderCamera = gui.addFolder('Camera');
-    folderCamera.add(this.offsetsConfig[POV.THIRD_PERSON], 'x', -50, 50).name('x');
-    folderCamera.add(this.offsetsConfig[POV.THIRD_PERSON], 'y', -50, 50).name('y');
-    folderCamera.add(this.offsetsConfig[POV.THIRD_PERSON], 'z', -50, 50).name('z');
+    folderCamera.add(this.offsetsConfig[POV.THIRD_PERSON], 'x', 0, 10).name('x');
+    folderCamera.add(this.offsetsConfig[POV.THIRD_PERSON], 'y', 0, 10).name('y');
+    folderCamera.add(this.offsetsConfig[POV.THIRD_PERSON], 'z', 0, 10).name('z');
 
     folderCamera.add(this, 'pov', [POV.FIRST_PERSON, POV.THIRD_PERSON]).name('POV')
 

@@ -15,6 +15,11 @@ import CameraController from './controllers/camera-controller';
 
 const CANVAS_ID = 'scene';
 
+const enum CAMERA_MODES {
+  CONTROLLER = 'CONTROLLER',
+  ORBIT_CONTROLS = 'ORBIT_CONTROLS',
+}
+
 export default class Scene extends THREE.Scene{
   private canvas!: HTMLElement;
   private renderer!: THREE.WebGLRenderer;
@@ -30,6 +35,8 @@ export default class Scene extends THREE.Scene{
   private test!: Test;
   private fish!: Fish;
 
+  private cameraMode: CAMERA_MODES;
+
   private cameraController!: CameraController;
 
   private rendererStats!: RendererStats;
@@ -38,6 +45,8 @@ export default class Scene extends THREE.Scene{
     super();
 
     this.gui = new GUI();
+
+    this.cameraMode = CAMERA_MODES.CONTROLLER;
 
     this.init();
   }
@@ -77,21 +86,6 @@ export default class Scene extends THREE.Scene{
   }
 
   private async setupLoadingManager() {
-    // this.loadingManager = new THREE.LoadingManager();
-    // this.loadingManager.onStart = () => {
-    //   console.log('loading started');
-    // };
-    // this.loadingManager.onProgress = (url, loaded, total) => {
-    //   console.log('loading in progress:');
-    //   console.log(`${url} -> ${loaded} / ${total}`);
-    // };
-    // this.loadingManager.onLoad = () => {
-    //   console.log('loaded!');
-    // };
-    // this.loadingManager.onError = () => {
-    //   console.log('❌ error while loading');
-    // };
-
     await LOADER.loadAll();
 
   }
@@ -112,10 +106,13 @@ export default class Scene extends THREE.Scene{
   }
 
   private setupObjects() {
+    // const gridHelper = new THREE.GridHelper(SIZES.width, SIZES.width, 0xff0000, 0xffffff);
+    // this.add(gridHelper);
+
     const ground = this.ground = new Ground();
     ground.setGui(this.gui);
     this.add(ground);
-    ground.position.y = -10;
+    ground.position.y = -4;
     
     const bg = this.bg = new Background();
     this.add(bg)
@@ -131,24 +128,30 @@ export default class Scene extends THREE.Scene{
     const fish = this.fish = new Fish('');
     this.add(fish);
     fish.setGUI(this.gui);
+
+
+    const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+    this.add(cube);
   }
 
   private setupCamera() {
     this.camera = new THREE.PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 0.01, 10000);
-    this.camera.position.set(40, 40, 100);
+    this.camera.position.set(4, 4, 10);
   }
 
   private setupControls() {
-    this.controls = new OrbitControls(this.camera, this.canvas);
-    this.controls.enableDamping = true;
-    this.controls.autoRotate = false;
+    const controls = this.controls = new OrbitControls(this.camera, this.canvas);
+    controls.enableDamping = true;
+    controls.autoRotate = false;
 
-    // set zoom steps
+    controls.zoomSpeed = 10;
+    controls.panSpeed = 4;
+    controls.rotateSpeed = 2;
 
-    this.controls.minDistance = 1;
-    this.controls.maxDistance = 2000;
+    controls.minDistance = 0.1;
+    controls.maxDistance = 2000;
 
-    this.controls.update();
+    controls.update();
   }
 
   private initCameraController() {
@@ -166,6 +169,9 @@ export default class Scene extends THREE.Scene{
   }
 
   private setupGUI() {
+    this.gui.add(this, 'cameraMode', [CAMERA_MODES.CONTROLLER, CAMERA_MODES.ORBIT_CONTROLS]).name('Camera Mode');
+
+
     const sceneFolder = this.gui.addFolder('Scene');
     sceneFolder.add(this.water, 'visible').name('water');
     sceneFolder.add(this.ground, 'visible').name('ground');
@@ -219,9 +225,11 @@ export default class Scene extends THREE.Scene{
       this.camera.updateProjectionMatrix();
     }
 
-    this.cameraController?.update(dt);
-
-    // this.controls.update();
+    if (this.cameraMode === CAMERA_MODES.ORBIT_CONTROLS) {
+      this.controls?.update(dt);
+    }else if (this.cameraMode === CAMERA_MODES.CONTROLLER) {
+      this.cameraController?.update(dt);
+    }
 
     this.renderer.render(this, this.camera);
 

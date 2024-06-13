@@ -20,12 +20,12 @@ export default class Fish extends THREE.Group {
   private _speed: number = 0;
   private _angle: THREE.Euler = new THREE.Euler();
 
-  private _maxSpeed: number = 220;
-  private _acceleration: number = 35;
-  private _deceleration: number = 30;
+  private _maxSpeed: number = 50;
+  private _acceleration: number = 7;
+  private _deceleration: number = 6;
   private _rotationSpeed: number = 3;
   private _rotationLerp: number = 0.2;
-  private _breakSpeed: number = 100;
+  private _breakSpeed: number = 20;
 
   private _realSpeed: number = 0;
   private _boundingBox!: THREE.Vector3;
@@ -75,6 +75,8 @@ export default class Fish extends THREE.Group {
 
     this._boundingBox = new THREE.Box3().setFromObject(this.view).getSize(new THREE.Vector3());
 
+    console.log(this._boundingBox)
+
     const line = this.line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -10)]), new THREE.LineBasicMaterial({ color: 0xff0000 }));
     
     setTimeout(() => {
@@ -86,6 +88,8 @@ export default class Fish extends THREE.Group {
     const asset = ALL_ASSETS.models[modelName];
     const view = this.view = asset.scene;
 
+    const s = 0.2;
+    view.scale.set(s, s, s);
     view.rotation.y = Math.PI;
 
     if(asset.animations.length !== 0){
