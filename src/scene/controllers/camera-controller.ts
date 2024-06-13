@@ -27,7 +27,7 @@ export default class CameraController {
     }
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'p') {
+      if (event.code === 'KeyP') {
         this.pov = this.pov === POV.FIRST_PERSON ? POV.THIRD_PERSON : POV.FIRST_PERSON;
       }
     });

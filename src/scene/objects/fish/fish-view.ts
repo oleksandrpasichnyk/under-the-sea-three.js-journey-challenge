@@ -4,10 +4,10 @@ import { ALL_ASSETS } from '../../../loader/loader';
 import { FISH_ANIMATION_TYPE, FishAnimationsController } from './fish-animations-controller';
 
 const enum KEYS {
-  UP = 'ArrowUp',
-  DOWN = 'ArrowDown',
-  LEFT = 'ArrowLeft',
-  RIGHT = 'ArrowRight',
+  UP = 'KeyW',
+  DOWN = 'KeyS',
+  LEFT = 'KeyA',
+  RIGHT = 'KeyD',
 }
 
 export default class Fish extends THREE.Group {
@@ -101,11 +101,11 @@ export default class Fish extends THREE.Group {
 
   private setupEvents() {
     document.addEventListener('keydown', (event) => {
-      this.keyStates[event.key] = true;
+      this.keyStates[event.code] = true;
     });
     
     document.addEventListener('keyup', (event) => {
-      this.keyStates[event.key] = false;
+      this.keyStates[event.code] = false;
     });
   }
 
