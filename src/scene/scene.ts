@@ -41,6 +41,8 @@ export default class Scene extends THREE.Scene{
 
   private rendererStats!: RendererStats;
 
+  private prewPos = new THREE.Vector3();
+
   constructor() {
     super();
 
@@ -234,5 +236,19 @@ export default class Scene extends THREE.Scene{
     this.renderer.render(this, this.camera);
 
     this.rendererStats?.update(this.renderer);
+
+    if(this.fish && this.fish.position.distanceTo(this.prewPos) > 0.1){
+      // this.createTraceHelper(this.fish.position);
+      // this.prewPos = this.fish.position.clone();
+    }
+  }
+
+  private createTraceHelper(position: THREE.Vector3) {
+    const sphere = new THREE.SphereGeometry(0.1);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const mesh = new THREE.Mesh(sphere, material);
+    this.add(mesh);
+
+    mesh.position.copy(position);
   }
 }
