@@ -20,35 +20,35 @@ export default class Ground extends THREE.Group {
   public setGui(gui: any) {
     const folderGround = gui.addFolder('Ground');
 
-    // resolution
-    folderGround.add(this, 'resolution', 0.1, 10, 0.01).name('resolution').onChange(() => {
-      this.resetView();
-    });
+    // // resolution
+    // folderGround.add(this, 'resolution', 0.1, 10, 0.01).name('resolution').onChange(() => {
+    //   this.resetView();
+    // });
 
-    // size
-    folderGround.add(this, 'size', 2, 300).name('size').onChange(() => {
-      this.resetView();
-    });
+    // // size
+    // folderGround.add(this, 'size', 2, 300).name('size').onChange(() => {
+    //   this.resetView();
+    // });
 
-    folderGround.add(this.material, 'flatShading').name('flatShading').onChange(() => {
-      this.material.needsUpdate = true;
-    });
+    // folderGround.add(this.material, 'flatShading').name('flatShading').onChange(() => {
+    //   this.material.needsUpdate = true;
+    // });
 
-    folderGround.add(this.material, 'wireframe').name('wireframe').onChange(() => {
-      this.material.needsUpdate = true;
-    });
+    // folderGround.add(this.material, 'wireframe').name('wireframe').onChange(() => {
+    //   this.material.needsUpdate = true;
+    // });
 
-    folderGround.add(this.material, 'displacementScale', 0, 5, 0.01).name('displacementScale').onChange(() => {
-      this.material.needsUpdate = true;
-    });
+    // folderGround.add(this.material, 'displacementScale', 0, 5, 0.01).name('displacementScale').onChange(() => {
+    //   this.material.needsUpdate = true;
+    // });
 
-    folderGround.addColor(this.material, 'color').name('color').onChange(() => {
-      this.material.needsUpdate = true;
-    });
+    // folderGround.addColor(this.material, 'color').name('color').onChange(() => {
+    //   this.material.needsUpdate = true;
+    // });
 
-    folderGround.add(this.view.position, 'y', -50, 50).name('y:').onChange((y: number) => {
-      this.view.position.y = y;
-    });
+    // folderGround.add(this.view.position, 'y', -50, 50).name('y:').onChange((y: number) => {
+    //   this.view.position.y = y;
+    // });
 
     folderGround.close();
   }
@@ -60,9 +60,58 @@ export default class Ground extends THREE.Group {
   }
 
   private init() {
-    this.initMaterial();
+    const res = this.resolution;
 
-    this.initView();
+    
+
+    const geometry = new THREE.PlaneGeometry(SIZES.width, SIZES.length, SIZES.width * res, SIZES.length * res);
+    const material = new THREE.MeshStandardMaterial({ color: 0x228B22 });
+
+    const plane = new THREE.Mesh(geometry, material);
+
+    const curvePoints = [
+      new THREE.Vector2(-50, -20),
+      new THREE.Vector2(-30, -10),
+      new THREE.Vector2(-10, -10),
+      new THREE.Vector2(10, 10),
+      new THREE.Vector2(30, 20),
+      new THREE.Vector2(50, 50)
+    ];
+
+    const curve = new THREE.CatmullRomCurve3(curvePoints.map(p => new THREE.Vector3(p.x, p.y, 0)));
+
+    const vertices = plane.geometry.attributes.position.array;
+      for (let i = 0; i < vertices.length; i += 3) {
+        const x = vertices[i];
+        const y = vertices[i + 1];
+        const z = vertices[i + 2];
+
+        // Get the closest point on the curve to the current vertex
+        const pointOnCurve = curve.getPoint(curve.getUtoTmapping(x / 100 + 0.5, 0));
+
+        // Define the path width
+        const pathWidth = 5;
+
+        if (Math.abs(y - pointOnCurve.y) < pathWidth) {
+          vertices[i + 2] = 0; // Flat path along the curve
+        } else if (Math.abs(y - pointOnCurve.y) >= pathWidth && Math.abs(y - pointOnCurve.y) < pathWidth * 2) {
+          vertices[i + 2] = Math.random() * 5 + 2; // Mountains on left and right
+        } else {
+          vertices[i + 2] = Math.random() * 3; // Random ground elsewhere
+        }
+      }
+
+    plane.geometry.attributes.position.needsUpdate = true;
+    plane.geometry.computeVertexNormals();
+
+    this.add(plane);
+
+    plane.rotation.x = -Math.PI / 2;
+    // plane.position.y = 10;
+
+    // this.initMaterial();
+
+    // this.initView();
   }
 
   private initMaterial() {
