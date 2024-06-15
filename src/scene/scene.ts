@@ -195,6 +195,10 @@ export default class Scene extends THREE.Scene{
     fogFolder.addColor(this.fog!, 'color').name('color');
     fogFolder.add(this.fog!, 'near', 0, 1000, 1).name('near');
     fogFolder.add(this.fog!, 'far', 0, 1000, 1).name('far');
+    // switch fog visibility
+    fogFolder.add(this, 'fog', [null, this.fog]).name('fog').onChange((fog) => {
+      this.fog = fog;
+    });
 
     fogFolder.close();
 
