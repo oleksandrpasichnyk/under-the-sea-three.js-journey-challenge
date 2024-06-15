@@ -92,7 +92,7 @@ export default class Fish extends THREE.Group {
     folderFish.add(this, '_rotationBreakSpeed', 0, 5, 0.01).name('Rotation break speed');
     folderFish.add(this, '_animationFactor', 1, 10, 0.01).name('Animation factor');
 
-    folderFish.open();
+    folderFish.close();
   }
 
   private init(modelName: string) {

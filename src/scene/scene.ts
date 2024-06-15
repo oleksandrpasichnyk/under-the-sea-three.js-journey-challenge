@@ -63,11 +63,15 @@ export default class Scene extends THREE.Scene{
 
     
     await this.setupLoadingManager();
+
+    console.time('init scene')
     this.setupObjects();
     this.initCameraController();
     this.setupGUI();
 
     this.initRendererStats();
+
+    console.timeEnd('init scene')
   }
 
   private initRendererStats() {

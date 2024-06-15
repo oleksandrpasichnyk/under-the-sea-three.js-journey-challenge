@@ -28,7 +28,8 @@ export default class Ground extends THREE.Group {
     const folderGround = gui.addFolder('Ground');
 
     folderGround.add(this, 'resolution', 0.1, 10, 0.01).name('resolution');
-    folderGround.add(this, 'pathWidth', 1, 50, 1).name('pathWidth');
+    folderGround.add(this, 'pathWidth', 1, 100, 1).name('pathWidth');
+    folderGround.add(this, 'mountWidth', 1, 100, 1).name('mountWidth');
     folderGround.add(this, 'minMountHeight', 1, 50, 1).name('minMountHeight');
     folderGround.add(this, 'mountRandomHeight', 1, 50, 1).name('mountRandomHeight');
     folderGround.add(this, 'maxGroundHeight', 1, 50, 1).name('maxGroundHeight');
@@ -61,7 +62,7 @@ export default class Ground extends THREE.Group {
     //   this.view.position.y = y;
     // });
 
-    folderGround.close();
+    // folderGround.close();
   }
 
   private resetView() {
@@ -76,7 +77,7 @@ export default class Ground extends THREE.Group {
     let minDistance = Infinity;
   
     // Sample points along the curve to find the closest perpendicular point
-    const divisions = 200; // Increase for higher accuracy
+    const divisions = 100; // Increase for higher accuracy
     for (let i = 0; i <= divisions; i++) {
       // const t = i / divisions;
       // const point = curve.getPoint(t);
@@ -96,9 +97,10 @@ export default class Ground extends THREE.Group {
   
 
   private init() {
+    const s = 1.2;
     const res = this.resolution;
-    const width = SIZES.width;
-    const length = SIZES.length;
+    const width = SIZES.width / s;
+    const length = SIZES.length / s;
 
     const widthSegments = width * res;
     const lengthSegments = length * res;
@@ -107,6 +109,11 @@ export default class Ground extends THREE.Group {
     const material = this.material = new THREE.MeshStandardMaterial({ color: 0x228B22 });
 
     const plane = this.view = new THREE.Mesh(geometry, material);
+
+    const helpersGroup = new THREE.Group();
+    this.add(helpersGroup);
+
+    helpersGroup.scale.set(s, s, s);
 
     const curvePoints = [
       new THREE.Vector2(-50, -20),
@@ -123,10 +130,16 @@ export default class Ground extends THREE.Group {
 
       const point = new THREE.Mesh(new THREE.SphereGeometry(5), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
       point.position.set(p.x, 5, p.y);
-      this.add(point);
+      helpersGroup.add(point);
     });
 
     const curve = new THREE.CatmullRomCurve3(curvePoints.map(p => new THREE.Vector3(p.x, -p.y, 0)));
+
+    const pathWidth = this.pathWidth / s;
+    const mountWidth = this.mountWidth / s;
+    const minMountHeight = this.minMountHeight / s;
+    const mountRandomHeight = this.mountRandomHeight / s;
+    const maxGroundHeight = this.maxGroundHeight / s;
 
     const vertices = plane.geometry.attributes.position.array;
     for (let i = 0; i < vertices.length; i += 3) {
@@ -138,7 +151,6 @@ export default class Ground extends THREE.Group {
       const pointOnCurve = curve.getPoint(curve.getUtoTmapping((x / width) + 0.5, 0));
 
       // Define the path width
-      const pathWidth = this.pathWidth;
 
       
       // const tangent = curve.getTangent(curve.getUtoTmapping((x / width) + 0.5, 0)).normalize();
@@ -151,7 +163,7 @@ export default class Ground extends THREE.Group {
       if (i % 1800 === 0) {
         const point = new THREE.Mesh(new THREE.SphereGeometry(3), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
         point.position.set(pointOnCurve.x, 8, -pointOnCurve.y);
-        this.add(point);
+        helpersGroup.add(point);
       }
 
       const closestPoint = this.getClosestPerpendicularPointOnCurve(curve, x, y, width);
@@ -163,10 +175,10 @@ export default class Ground extends THREE.Group {
 
         if (Math.abs(distance) < pathWidth * 0.5) {
           vertices[i + 2] = 0; // Flat path along the curve
-        } else if (Math.abs(distance) >= pathWidth * 0.5 && Math.abs(distance) < pathWidth * 0.5 + this.mountWidth) {
-          vertices[i + 2] = Math.random() * this.mountRandomHeight + this.minMountHeight; // Mountains on left and right
+        } else if (Math.abs(distance) >= pathWidth * 0.5 && Math.abs(distance) < pathWidth * 0.5 + mountWidth) {
+          vertices[i + 2] = Math.random() * mountRandomHeight + minMountHeight; // Mountains on left and right
         } else {
-          vertices[i + 2] = Math.random() * this.maxGroundHeight; // Random ground elsewhere
+          vertices[i + 2] = Math.random() * maxGroundHeight; // Random ground elsewhere
         }
       }
     }
@@ -177,7 +189,7 @@ export default class Ground extends THREE.Group {
     this.add(plane);
 
     plane.rotation.x = -Math.PI / 2;
-
+    plane.scale.set(s, s, s);
     console.log('vertices', plane.geometry.attributes.position.count);
 
     // plane.position.y = 10;
