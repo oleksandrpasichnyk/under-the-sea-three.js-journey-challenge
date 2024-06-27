@@ -18,6 +18,8 @@
     "@xailabs/three-renderer-stats": "^1.0.4",
     "lil-gui": "^0.19.2",
     "noisejs": "^2.1.0",
-    "three": "^0.165.0"
+    "three": "^0.165.0",
+    "three-custom-shader-material": "^5.4.0",
+    "vite-plugin-glsl": "^1.3.0"
   }
 }

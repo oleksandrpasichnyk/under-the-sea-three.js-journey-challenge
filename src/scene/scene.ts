@@ -63,11 +63,15 @@ export default class Scene extends THREE.Scene{
 
     
     await this.setupLoadingManager();
+
+    console.time('init scene')
     this.setupObjects();
     this.initCameraController();
     this.setupGUI();
 
     this.initRendererStats();
+
+    console.timeEnd('init scene')
   }
 
   private initRendererStats() {
@@ -108,7 +112,7 @@ export default class Scene extends THREE.Scene{
   }
 
   private setupObjects() {
-    // const gridHelper = new THREE.GridHelper(SIZES.width, SIZES.width, 0xff0000, 0xffffff);
+    // const gridHelper = new THREE.GridHelper(SIZES.width, SIZES.width * 0.1, 0xff0000, 0xffffff);
     // this.add(gridHelper);
 
     const ground = this.ground = new Ground();
@@ -130,10 +134,6 @@ export default class Scene extends THREE.Scene{
     const fish = this.fish = new Fish('');
     this.add(fish);
     fish.setGUI(this.gui);
-
-
-    const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
-    this.add(cube);
   }
 
   private setupCamera() {

@@ -34,8 +34,10 @@ class Loader {
   }
 
   public async loadAll() {
+    console.time('loadAll');
     await this.loadTextures();
     await this.loadModels();
+    console.timeEnd('loadAll');
   }
 
   private async loadTextures() {

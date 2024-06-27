@@ -92,7 +92,7 @@ export default class Fish extends THREE.Group {
     folderFish.add(this, '_rotationBreakSpeed', 0, 5, 0.01).name('Rotation break speed');
     folderFish.add(this, '_animationFactor', 1, 10, 0.01).name('Animation factor');
 
-    folderFish.open();
+    folderFish.close();
   }
 
   private init(modelName: string) {
@@ -207,8 +207,8 @@ export default class Fish extends THREE.Group {
 
     const prewPos = this.position.clone();
 
-    const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(this.quaternion).multiplyScalar(this._speed * dt);
-    this.position.add(direction);
+    const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(this.quaternion);    
+    this.position.add(direction.clone().multiplyScalar(this._speed * dt));
 
     this._realSpeed = Math.round(this.position.distanceTo(prewPos) / dt);
     this.realSpeedDisplay?.updateDisplay();
