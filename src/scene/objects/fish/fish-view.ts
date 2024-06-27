@@ -207,8 +207,8 @@ export default class Fish extends THREE.Group {
 
     const prewPos = this.position.clone();
 
-    const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(this.quaternion).multiplyScalar(this._speed * dt);
-    this.position.add(direction);
+    const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(this.quaternion);    
+    this.position.add(direction.clone().multiplyScalar(this._speed * dt));
 
     this._realSpeed = Math.round(this.position.distanceTo(prewPos) / dt);
     this.realSpeedDisplay?.updateDisplay();
