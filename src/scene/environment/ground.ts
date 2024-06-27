@@ -22,12 +22,17 @@ export default class Ground extends THREE.Group {
   private details!: EnvDetails;
   private uniforms: any;
 
+  private sandColor: number;
+
   constructor() {
     super();
     this.size = 50;
     this.resolution = 5;
 
+    this.sandColor = 0xcaa341;
+
     this.pathWidth = 60;
+
 
     this.details = new EnvDetails();
     this.add(this.details);
@@ -95,79 +100,135 @@ export default class Ground extends THREE.Group {
     // this.createShaderView();
   }
 
-  private init() {
+  private createRoadCurve() {
     const curvePoints = [];
+    const R = 100;
+    const numPoints = 25;
 
-    for ( let i = 0; i < 10; i ++ ) {
-      curvePoints.push( new THREE.Vector3( THREE.MathUtils.randFloat( - 50, 50 ), 0, ( i - 4.5 ) * 50 ) );
+    for (let i = 0; i < numPoints; i++) {
+      const angle = (i / numPoints) * Math.PI * 2;
+      const randomDeviation =  i < 2 || i > numPoints - 3 ? 20 : THREE.MathUtils.randFloatSpread(15);
+
+      const x = Math.cos(angle) * (R + randomDeviation);
+      const z = Math.sin(angle) * (R + randomDeviation);
+
+      curvePoints.push(new THREE.Vector3(x, 0, z));
     }
 
-    const randomSpline = new THREE.CatmullRomCurve3( curvePoints );
+    // To ensure the curve is closed, add the first point at the end of the array again
+    curvePoints.push(curvePoints[0].clone());
+    curvePoints.push(curvePoints[1].clone());
 
-    // visualize curve
-    const points = randomSpline.getPoints( 50 );
+    return curvePoints;
+  }
 
+  private createRoad(spline: THREE.CatmullRomCurve3) {
     const extrudeSettings = {
-      steps: 100,
+      steps: 200,
       bevelEnabled: false,
-      extrudePath: new THREE.CatmullRomCurve3( points ),
+      extrudePath: spline,
     };
+
+    const width = this.pathWidth;
+    const segments = 5;
+
+    const points = [];
+
+    for (let i = 0; i < segments; i++) {
+      points.push(new THREE.Vector2(0, -width * 0.5 + i * width / (segments - 1)));
+    }
+
+    const shape = new THREE.Shape( points );
+    const geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+    const material = new THREE.MeshLambertMaterial( { color: this.sandColor, wireframe: false } );
+    const road = new THREE.Mesh( geometry, material );
+
+    this.add( road );
+  }
+
+  private createRoadCenterLine(curve: THREE.CatmullRomCurve3) {
+    const extrudeSettings = {
+      steps: 300,
+      bevelEnabled: false,
+      extrudePath: curve,
+    };
+
+    const w = 1;
+    const h = 0.1;
 
     const circleShape = new THREE.Shape();
 
-    circleShape.moveTo( 0, 0 );
-    circleShape.absarc( 0, 0, 0.5, 0, Math.PI * 2, false );
+    circleShape.moveTo( -h * 0.5, w * 0.5 );
+    circleShape.lineTo( h * 0.5, w * 0.5 );
+    circleShape.lineTo( h * 0.5, -w * 0.5 );
+    circleShape.lineTo( -h * 0.5, -w * 0.5 );
 
     const geometry = new THREE.ExtrudeGeometry( circleShape, extrudeSettings );
-    const material = new THREE.MeshLambertMaterial( { color: 0xff0000, wireframe: false } );
+    geometry.translate(0, -h * 0.5 + 0.001, 0);
+    const material = new THREE.MeshLambertMaterial( { color: 0x000000, wireframe: false } );
     const mesh = new THREE.Mesh( geometry, material );
 
-    mesh.position.set(0, 0.1, 0);
     this.add( mesh );
-
-    const extrudeSettings2 = {
-      steps: 200,
-      bevelEnabled: false,
-      extrudePath: randomSpline,
-    };
-
-    const width = 20;
-    const segments = 5;
-
-    const pts2 = [];
-
-    for (let i = 0; i < segments; i++) {
-      pts2.push(new THREE.Vector2(0, -width * 0.5 + i * width / (segments - 1)));
-    }
-
-    const shape2 = new THREE.Shape( pts2 );
-    const geometry2 = new THREE.ExtrudeGeometry( shape2, extrudeSettings2 );
-    const material2 = new THREE.MeshLambertMaterial( { color: 0xff8000, wireframe: false } );
-    const mesh2 = new THREE.Mesh( geometry2, material2 );
-
-    this.add( mesh2 );
-
-    this.createLeftMountain(curvePoints);
-    // this.createRightRightMountains(curvePoints)
   }
 
+  private init() {
+    const curvePoints = this.createRoadCurve();
+    const centerLinePoints = [...curvePoints]
+    centerLinePoints.pop();
+    const roadSpline = new THREE.CatmullRomCurve3( curvePoints );
+    const centerLineSpline = new THREE.CatmullRomCurve3( centerLinePoints );
+
+    roadSpline.curveType = "catmullrom";
+    centerLineSpline.curveType = "catmullrom";
+
+
+    // this.createCurveHelper(roadSpline);
+
+    this.createRoad(roadSpline);
+    this.createRoadCenterLine(centerLineSpline);
+
+    this.createLeftMountains(roadSpline);
+    this.createRightMountains(roadSpline)
+  }
+
+  // private getPerpendicularCurve(startCurve: THREE.CatmullRomCurve3, dx: number): THREE.CatmullRomCurve3 {
+  //   const points = startCurve.getPoints(100); // Get points along the curve
+  //   const perpendicularPoints = [];
+
+  //   for (let i = 0; i < points.length; i++) {
+  //     const point = points[i];
+  //     const tangent = startCurve.getTangent(i / (points.length - 1)).normalize(); // Get tangent vector
+
+  //     // Calculate perpendicular vector in the XY plane
+  //     const perpendicular = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
+
+  //     // Offset point by dx along the perpendicular vector
+  //     const newPoint = new THREE.Vector3(
+  //       point.x + perpendicular.x * dx,
+  //       point.y + perpendicular.y * dx,
+  //       point.z + perpendicular.z * dx
+  //     );
+
+  //     perpendicularPoints.push(newPoint);
+  //   }
+
+  //   return new THREE.CatmullRomCurve3(perpendicularPoints);
+  // }
+
   private getPerpendicularCurve(startCurve: THREE.CatmullRomCurve3, dx: number): THREE.CatmullRomCurve3 {
-    const points = startCurve.getPoints(50); // Get points along the curve
+    const points = startCurve.getPoints(100); // Get points along the curve
     const perpendicularPoints = [];
+
+    const center = new THREE.Vector3(0, 0, 0);
 
     for (let i = 0; i < points.length; i++) {
       const point = points[i];
-      const tangent = startCurve.getTangent(i / (points.length - 1)).normalize(); // Get tangent vector
-
-      // Calculate perpendicular vector in the XY plane
-      const perpendicular = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
-
-      // Offset point by dx along the perpendicular vector
-      const newPoint = new THREE.Vector3(
-        point.x + perpendicular.x * dx,
-        point.y + perpendicular.y * dx,
-        point.z + perpendicular.z * dx
-      );
+      const dis = point.distanceTo(center);
+      const newDis = dis + dx;
+      const s = newDis/dis;
+      point.multiplyScalar(s)
+      
+      const newPoint = point.clone();
 
       perpendicularPoints.push(newPoint);
     }
@@ -175,25 +236,72 @@ export default class Ground extends THREE.Group {
     return new THREE.CatmullRomCurve3(perpendicularPoints);
   }
 
-  private createLeftMountain(centerCurvePoints: THREE.Vector3[]) {
-    
-    const curve = this.getPerpendicularCurve(new THREE.CatmullRomCurve3(centerCurvePoints), 10);
+  private createLeftMountains(startCurve: THREE.CatmullRomCurve3) {
+    const w = 50;
+    const h = 20;
+
+    const curve = this.getPerpendicularCurve(startCurve, w * 0.5 + this.pathWidth * 0.5 - 1);
     const helper = this.createCurveHelper(curve);
-    
+
+    const extrudeSettings = {
+      steps: 300,
+      bevelEnabled: false,
+      extrudePath: curve,
+    };
+
+
+    helper.position.y = h + 0.1;
+
+    const circleShape = new THREE.Shape();
+
+    circleShape.moveTo( -h * 0.5, w * 0.4 );
+    circleShape.lineTo( h * 0.5, w * 0.5 );
+    circleShape.lineTo( h * 0.5, -w * 0.5 );
+    circleShape.lineTo( -h * 0.4, -w * 0.2 );
+
+    const geometry = new THREE.ExtrudeGeometry( circleShape, extrudeSettings );
+    geometry.translate(0, h * 0.5, 0);
+    const material = new THREE.MeshLambertMaterial( { color: this.sandColor, wireframe: false } );
+    const mesh = new THREE.Mesh( geometry, material );
+
+    this.add( mesh );
   }
 
-  private createRightMountains(centerCurvePoints: THREE.Vector3[]) {
-    
-    const curve = this.getPerpendicularCurve(new THREE.CatmullRomCurve3(centerCurvePoints), -40);
-    this.createCurveHelper(curve);
+  private createRightMountains(startCurve: THREE.CatmullRomCurve3) {
+    const w = 40;
+    const h = 20;
+
+    const curve = this.getPerpendicularCurve(startCurve, -w * 0.5 - this.pathWidth * 0.5 + 1);
+    const helper = this.createCurveHelper(curve);
+
+    const extrudeSettings = {
+      steps: 300,
+      bevelEnabled: false,
+      extrudePath: curve,
+    };
+
+    helper.position.y = h + 0.1;
+
+    const circleShape = new THREE.Shape();
+
+    circleShape.moveTo( -h * 0.4, w * 0.2 );
+    circleShape.lineTo( h * 0.5, w * 0.5 );
+    circleShape.lineTo( h * 0.5, -w * 0.5 );
+    circleShape.lineTo( -h * 0.5, -w * 0.4 );
+
+    const geometry = new THREE.ExtrudeGeometry( circleShape, extrudeSettings );
+    geometry.translate(0, h * 0.5, 0);
+    const material = new THREE.MeshLambertMaterial( { color: this.sandColor, wireframe: false } );
+    const mesh = new THREE.Mesh( geometry, material );
+
+    this.add( mesh );
   }
 
   private createCurveHelper(curve: THREE.CatmullRomCurve3) {
-    const points = curve.getPoints(200);
     const extrudeSettings = {
       steps: 200,
       bevelEnabled: false,
-      extrudePath: new THREE.CatmullRomCurve3( points ),
+      extrudePath: curve,
     };
 
     const circleShape = new THREE.Shape();
@@ -205,14 +313,10 @@ export default class Ground extends THREE.Group {
     const material = new THREE.MeshLambertMaterial( { color: 0xff0000, wireframe: false } );
     const mesh = new THREE.Mesh( geometry, material );
 
-    mesh.position.set(0, 0.1, 0);
     this.add( mesh );
+
+    return mesh;
   }
-
-
-
-
-
 
   private createShaderView() {
     const res = this.resolution;
