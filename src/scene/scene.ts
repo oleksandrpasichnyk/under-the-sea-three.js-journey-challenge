@@ -124,8 +124,8 @@ export default class Scene extends THREE.Scene{
     this.add(water);
     water.position.y = 50;
 
-    // const test = this.test = new Test();
-    // this.add(test);
+    const test = this.test = new Test();
+    this.add(test);
 
     const fish = this.fish = new Fish('');
     this.add(fish);

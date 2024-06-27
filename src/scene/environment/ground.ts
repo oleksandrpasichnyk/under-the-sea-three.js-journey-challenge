@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { SIZES } from '../../config';
 import { ALL_ASSETS } from '../../loader/loader';
+import EnvDetails from './details';
 
 export default class Ground extends THREE.Group {
   private size: number;
@@ -14,6 +15,8 @@ export default class Ground extends THREE.Group {
   private material!: THREE.MeshStandardMaterial;
   private view!: THREE.Mesh; // THREE.InstancedMesh;
 
+  private details!: EnvDetails;
+
   constructor() {
     super();
     this.size = 50;
@@ -21,7 +24,10 @@ export default class Ground extends THREE.Group {
 
     this.pathWidth = 60;
 
-    this.init();
+    this.details = new EnvDetails();
+    this.add(this.details);
+
+    // this.init();
   }
 
   public setGui(gui: any) {

@@ -29,15 +29,15 @@ export default class TestObject extends THREE.Group {
     const view = this.view = asset.scene;
 
     if(asset.animations.length !== 0){
-      const mixer = this.mixer = new FishAnimationsController(view, asset.animations);
+      // const mixer = this.mixer = new FishAnimationsController(view, asset.animations);
 
       // run Fish_Armature|Swimming_Fast action
 
-      mixer.playAnimation(FISH_ANIMATION_TYPE.SwimmingFast);
+      // mixer.playAnimation(FISH_ANIMATION_TYPE.SwimmingFast);
 
-      setTimeout(() => {
-        mixer.playAnimation(FISH_ANIMATION_TYPE.Death, false);
-      } , 5000);
+      // setTimeout(() => {
+      //   mixer.playAnimation(FISH_ANIMATION_TYPE.Death, false);
+      // } , 5000);
 
       // const action = mixer.clipAction()
       // mixer.clipAction(asset.animations[0]); // Get the first animation

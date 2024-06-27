@@ -22,4 +22,41 @@ export default class ThreeHelper {
 
     return anim.animations[0];
   }
+
+  static createModelView(name: string) {
+    const gltf = ALL_ASSETS.models[name];
+    const view = cloneGltf(gltf).scene;
+    
+    this.makeModelDoubleSide(view);
+
+    return view;
+  }
+
+  static findGeometry(view: THREE.Object3D) {
+    let geom = null;
+
+    view.traverse((child: any) => {
+      if (child.isMesh) {
+        geom = child.geometry;
+
+        return;
+      }
+    });
+
+    return geom;
+  }
+
+  static findMaterial(view: THREE.Object3D) {
+    let mat = null;
+
+    view.traverse((child: any) => {
+      if (child.isMesh) {
+        mat = child.material;
+
+        return;
+      }
+    });
+
+    return mat;
+  }
 }

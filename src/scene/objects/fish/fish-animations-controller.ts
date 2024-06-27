@@ -124,6 +124,10 @@ export class FishAnimationsController {
   }
 
   private setWeight(action: THREE.AnimationAction, weight: number): void {
+    if(!action) {
+      return;
+    }
+
     action.enabled = true;
     action.setEffectiveTimeScale(1);
     action.setEffectiveWeight(weight);
