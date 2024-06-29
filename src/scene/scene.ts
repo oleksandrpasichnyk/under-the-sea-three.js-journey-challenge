@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { resizeRendererToDisplaySize } from '../helpers/responsiveness';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import GUI from 'lil-gui';
-import Ground from './environment/ground';
+import Stadium from './environment/stadium';
 import Background from './environment/background';
 import TopWater from './environment/water';
 import { SIZES } from '../config';
@@ -31,7 +31,7 @@ export default class Scene extends THREE.Scene{
   private stats!: Stats;
   private gui!: GUI;
   private water!: TopWater;
-  private ground!: Ground;
+  private stadium!: Stadium;
   private bg!: Background;
   private test!: Test;
   private fish!: Fish;
@@ -118,7 +118,7 @@ export default class Scene extends THREE.Scene{
     // const gridHelper = new THREE.GridHelper(SIZES.width, SIZES.width * 0.1, 0xff0000, 0xffffff);
     // this.add(gridHelper);
 
-    const ground = this.ground = new Ground();
+    const ground = this.stadium = new Stadium();
     ground.setGui(this.gui);
     this.add(ground);
     ground.position.y = -4;
@@ -146,13 +146,13 @@ export default class Scene extends THREE.Scene{
       underwaterBubbles.position.y = 20;
 
       underwaterBubbles.show(10, 1);
-      underwaterBubbles.setWindVector(new THREE.Vector3(0.1, 0, 0));
+      underwaterBubbles.setWindVector(new THREE.Vector3(0.01, 0, 0));
     }, 1000);
 
   }
 
   private setupCamera() {
-    this.camera = new THREE.PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 0.01, 10000);
+    this.camera = new THREE.PerspectiveCamera(70, this.canvas.clientWidth / this.canvas.clientHeight, 0.01, 10000);
     this.camera.position.set(4, 4, 10);
   }
 
@@ -191,7 +191,7 @@ export default class Scene extends THREE.Scene{
 
     const sceneFolder = this.gui.addFolder('Scene');
     sceneFolder.add(this.water, 'visible').name('water');
-    sceneFolder.add(this.ground, 'visible').name('ground');
+    sceneFolder.add(this.stadium, 'visible').name('ground');
     sceneFolder.add(this.bg, 'visible').name('background');
 
     sceneFolder.close();

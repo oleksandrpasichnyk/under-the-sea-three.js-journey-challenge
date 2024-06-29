@@ -22,25 +22,21 @@ export default class UnderwaterBubbles extends THREE.Group{
   }
 
   private init() {
-    // Create a geometry and material for the bubbles
     const geometry = new THREE.SphereGeometry(0.1, 8, 8);
     const material = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.8 });
 
-    // Create the InstancedMesh
     this.bubbles = new THREE.InstancedMesh(geometry, material, this.bubbleCount);
     this.bubbles.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
-    // Add the InstancedMesh to the scene
     this.add(this.bubbles);
 
-    // Initialize bubble positions
     this.positions = [];
     this.speeds = [];
     for (let i = 0; i < this.bubbleCount; i++) {
       const position = new THREE.Vector3(
-        (Math.random() - 0.5) * 10,
-        Math.random() * 10,
-        (Math.random() - 0.5) * 10
+        (Math.random() - 0.5) * 1,
+        Math.random() * 1,
+        (Math.random() - 0.5) * 1
       );
       this.positions.push(position);
 
@@ -74,7 +70,7 @@ export default class UnderwaterBubbles extends THREE.Group{
         return;
       }
 
-      this.elapsedTime += dt / 1000;
+      this.elapsedTime += dt;
 
       if (this.elapsedTime > this.duration) {
         this.remove(this.bubbles);

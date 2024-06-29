@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-// import { Water as WaterObject } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/objects/Water2.js';
 import { Water } from 'three/examples/jsm/objects/Water';
 import { SIZES } from '../../config';
 import { ALL_ASSETS } from '../../loader/loader';
@@ -10,7 +9,7 @@ export default class TopWater extends THREE.Group {
   constructor() {
     super();
 
-    this.init2();
+    this.init();
   }
 
   public setGui(gui: any) {
@@ -25,7 +24,7 @@ export default class TopWater extends THREE.Group {
     folderWater.close();
   }
 
-  private init2() {
+  private init() {
     const waterGeometry = new THREE.PlaneGeometry( SIZES.width, SIZES.length );
     const texture = ALL_ASSETS.textures['water/water3.jpg'];
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;

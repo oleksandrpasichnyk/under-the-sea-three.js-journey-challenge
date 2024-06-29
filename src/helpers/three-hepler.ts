@@ -63,4 +63,44 @@ export default class ThreeHelper {
 
     return mat;
   }
+
+  static getPerpendicularCurve(startCurve: THREE.CatmullRomCurve3, dx: number): THREE.CatmullRomCurve3 {
+    const points = startCurve.getPoints(100); // Get points along the curve
+    const perpendicularPoints = [];
+
+    const center = new THREE.Vector3(0, 0, 0);
+
+    for (let i = 0; i < points.length; i++) {
+      const point = points[i];
+      const dis = point.distanceTo(center);
+      const newDis = dis + dx;
+      const s = newDis/dis;
+      point.multiplyScalar(s)
+      
+      const newPoint = point.clone();
+
+      perpendicularPoints.push(newPoint);
+    }
+
+    return new THREE.CatmullRomCurve3(perpendicularPoints);
+  }
+
+  static createCurveHelper(curve: THREE.CatmullRomCurve3) {
+    const extrudeSettings = {
+      steps: 200,
+      bevelEnabled: false,
+      extrudePath: curve,
+    };
+
+    const circleShape = new THREE.Shape();
+
+    circleShape.moveTo( 0, 0 );
+    circleShape.absarc( 0, 0, 0.5, 0, Math.PI * 2, false );
+
+    const geometry = new THREE.ExtrudeGeometry( circleShape, extrudeSettings );
+    const material = new THREE.MeshLambertMaterial( { color: 0xff0000, wireframe: false } );
+    const mesh = new THREE.Mesh( geometry, material );
+
+    return mesh;
+  }
 }
