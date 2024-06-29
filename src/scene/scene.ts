@@ -12,6 +12,7 @@ import { LOADER } from '../loader/loader';
 import Test from './test/test';
 import Fish from './objects/fish/fish-view';
 import CameraController from './controllers/camera-controller';
+import UnderwaterBubbles from './vfx/bubbles-effect';
 
 const CANVAS_ID = 'scene';
 
@@ -42,6 +43,8 @@ export default class Scene extends THREE.Scene{
   private rendererStats!: RendererStats;
 
   private prewPos = new THREE.Vector3();
+
+  private underwaterBubbles!: UnderwaterBubbles;
 
   constructor() {
     super();
@@ -130,10 +133,22 @@ export default class Scene extends THREE.Scene{
 
     const test = this.test = new Test();
     this.add(test);
+    test.position.y = 10;
 
     const fish = this.fish = new Fish('');
     this.add(fish);
     fish.setGUI(this.gui);
+
+    setTimeout(() => {
+      const underwaterBubbles = this.underwaterBubbles = new UnderwaterBubbles();
+      this.add(underwaterBubbles);
+
+      underwaterBubbles.position.y = 20;
+
+      underwaterBubbles.show(10, 1);
+      underwaterBubbles.setWindVector(new THREE.Vector3(0.1, 0, 0));
+    }, 1000);
+
   }
 
   private setupCamera() {
@@ -225,6 +240,8 @@ export default class Scene extends THREE.Scene{
     this.test?.update(dt);
     this.fish?.update(dt);
 
+    this.underwaterBubbles?.update(dt);
+    
     if (resizeRendererToDisplaySize(this.renderer)) {
       const canvas = this.renderer.domElement;
       this.camera.aspect = canvas.clientWidth / canvas.clientHeight;

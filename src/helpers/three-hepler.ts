@@ -3,6 +3,10 @@ import { ALL_ASSETS } from '../loader/loader';
 import cloneGltf from './three-clone-gltf';
 
 export default class ThreeHelper {
+  public static getBoundingBox(view: THREE.Object3D) {
+    
+  }
+
   public static makeModelDoubleSide(view: THREE.Object3D) {
     view.traverse((child: any) => {
       if (child.isMesh) {

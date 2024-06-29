@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import ThreeHelper from '../../../helpers/three-hepler';
 import { ALL_ASSETS } from '../../../loader/loader';
 import { FISH_ANIMATION_TYPE, FishAnimationsController } from './fish-animations-controller';
+import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 
 const enum KEYS {
   UP = 'KeyW',
@@ -123,6 +124,20 @@ export default class Fish extends THREE.Group {
     };
 
     ThreeHelper.makeModelDoubleSide(view);
+
+    const material = new CustomShaderMaterial({
+      baseMaterial: THREE.MeshStandardMaterial,
+      silent: true,
+  
+      metalness: 0,
+      roughness: 1,
+      color: 0x00ff00,
+      flatShading: true,
+
+      // wireframe: true
+    })
+
+    view.children[0].material = material;
 
     this.add(view);
   }

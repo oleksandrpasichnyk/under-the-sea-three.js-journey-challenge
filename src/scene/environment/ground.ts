@@ -6,23 +6,26 @@ import EnvDetails from './details';
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 import groundVertexShader from '../../shaders/ground/vertex.glsl'
 import groundFragmentShader from '../../shaders/ground/fragment.glsl'
+import { depth } from 'three/examples/jsm/nodes/Nodes';
+import ThreeHelper from '../../helpers/three-hepler';
 
 export default class Ground extends THREE.Group {
   private size: number;
   private resolution: number;
   private pathWidth: number;
-  private mountRandomHeight: number = 4;
-  private maxGroundHeight: number = 3;
-  private minMountHeight: number = 10;
+
   private mountWidth: number = 30;
 
   private material!: THREE.MeshStandardMaterial;
   private view!: THREE.Mesh; // THREE.InstancedMesh;
 
   private details!: EnvDetails;
-  private uniforms: any;
+  private mountainsUniforms: any;
+  private mountainsUniforms2: any;
+  private roadUniforms: any;
 
   private sandColor: number;
+  private stoneColor: number;
 
   constructor() {
     super();
@@ -30,6 +33,7 @@ export default class Ground extends THREE.Group {
     this.resolution = 5;
 
     this.sandColor = 0xcaa341;
+    this.stoneColor = 0x777777;
 
     this.pathWidth = 60;
 
@@ -37,14 +41,26 @@ export default class Ground extends THREE.Group {
     this.details = new EnvDetails();
     this.add(this.details);
 
-    // this.init();
-    this.uniforms = {
+    this.mountainsUniforms = {
       uTime: new THREE.Uniform(0),
       uPositionFrequency: new THREE.Uniform(0.2),
-      uStrength: new THREE.Uniform(2.0),
+      uStrength: new THREE.Uniform(12.0),
       uWarpFrequency: new THREE.Uniform(5),
       uWarpStrength: new THREE.Uniform(0.5),
-    }
+    };
+
+    this.mountainsUniforms2 = {
+      uPositionFrequency: new THREE.Uniform(0.2),
+      uStrength: new THREE.Uniform(3.0),
+    };
+
+    this.roadUniforms = {
+      uTime: new THREE.Uniform(0),
+      uPositionFrequency: new THREE.Uniform(0.2),
+      uStrength: new THREE.Uniform(1.0),
+      uWarpFrequency: new THREE.Uniform(5),
+      uWarpStrength: new THREE.Uniform(0.5),
+    };
 
     this.init();
   }
@@ -54,50 +70,10 @@ export default class Ground extends THREE.Group {
 
 
     folderGround.add(this, 'resolution', 0.1, 10, 0.01).name('resolution');
-    folderGround.add(this.uniforms.uPositionFrequency, 'value', 0, 10, 0.1).name('uPositionFrequency')
-    folderGround.add(this.uniforms.uStrength, 'value', 0, 100, 0.1).name('uStrength')
-    folderGround.add(this.uniforms.uWarpFrequency, 'value', 0, 100, 0.1).name('uWarpFrequency')
-    folderGround.add(this.uniforms.uWarpStrength, 'value', 0, 100, 0.1).name('uWarpStrength')
-
-    // folderGround.add(this, 'pathWidth', 1, 100, 1).name('pathWidth');
-    // folderGround.add(this, 'mountWidth', 1, 100, 1).name('mountWidth');
-    // folderGround.add(this, 'minMountHeight', 1, 50, 1).name('minMountHeight');
-    // folderGround.add(this, 'mountRandomHeight', 1, 50, 1).name('mountRandomHeight');
-    // folderGround.add(this, 'maxGroundHeight', 1, 50, 1).name('maxGroundHeight');
-    folderGround.add({ reset: () => this.resetShaderView() }, 'reset').name('reset view');
-
-    // // size
-    // folderGround.add(this, 'size', 2, 300).name('size').onChange(() => {
-    //   this.resetView();
-    // });
-
-    // folderGround.add(this.material, 'flatShading').name('flatShading').onChange(() => {
-    //   this.material.needsUpdate = true;
-    // });
-
-    // folderGround.add(this.material, 'wireframe').name('wireframe').onChange(() => {
-    //   this.material.needsUpdate = true;
-    // });
-
-    // folderGround.add(this.material, 'displacementScale', 0, 5, 0.01).name('displacementScale').onChange(() => {
-    //   this.material.needsUpdate = true;
-    // });
-
-    // folderGround.addColor(this.material, 'color').name('color').onChange(() => {
-    //   this.material.needsUpdate = true;
-    // });
-
-    // folderGround.add(this.view.position, 'y', -50, 50).name('y:').onChange((y: number) => {
-    //   this.view.position.y = y;
-    // });
-
-    // folderGround.close();
-  }
-
-  private resetShaderView() {
-    // this.view.material.dispose();
-    // this.remove(this.view);
-    // this.createShaderView();
+    folderGround.add(this.mountainsUniforms.uPositionFrequency, 'value', 0, 10, 0.1).name('uPositionFrequency')
+    folderGround.add(this.mountainsUniforms.uStrength, 'value', 0, 100, 0.1).name('uStrength')
+    folderGround.add(this.mountainsUniforms.uWarpFrequency, 'value', 0, 100, 0.1).name('uWarpFrequency')
+    folderGround.add(this.mountainsUniforms.uWarpStrength, 'value', 0, 100, 0.1).name('uWarpStrength')
   }
 
   private createRoadCurve() {
@@ -130,19 +106,41 @@ export default class Ground extends THREE.Group {
     };
 
     const width = this.pathWidth;
-    const segments = 5;
+    const height = 4;
+    const segments = 20;
 
     const points = [];
 
     for (let i = 0; i < segments; i++) {
-      points.push(new THREE.Vector2(0, -width * 0.5 + i * width / (segments - 1)));
+      points.push(new THREE.Vector2(height * 0.5, -width * 0.5 + i * width / (segments - 1)));
+    }
+
+    for (let i = 0; i < segments; i++) {
+      points.push(new THREE.Vector2(-height * 0.5, -(-width * 0.5 + i * width / (segments - 1))));
     }
 
     const shape = new THREE.Shape( points );
     const geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
-    const material = new THREE.MeshLambertMaterial( { color: this.sandColor, wireframe: false } );
-    const road = new THREE.Mesh( geometry, material );
 
+    const material = new CustomShaderMaterial({
+      baseMaterial: THREE.MeshStandardMaterial,
+      vertexShader: groundVertexShader,
+      fragmentShader: groundFragmentShader,
+      uniforms: this.roadUniforms,
+      silent: true,
+  
+      metalness: 0,
+      roughness: 1,
+      color: this.sandColor,
+      flatShading: true,
+
+      // wireframe: true
+    })
+
+
+    geometry.computeVertexNormals();
+
+    const road = new THREE.Mesh( geometry, material );
     this.add( road );
   }
 
@@ -181,39 +179,81 @@ export default class Ground extends THREE.Group {
     roadSpline.curveType = "catmullrom";
     centerLineSpline.curveType = "catmullrom";
 
-
-    // this.createCurveHelper(roadSpline);
-
     this.createRoad(roadSpline);
     this.createRoadCenterLine(centerLineSpline);
 
-    this.createLeftMountains(roadSpline);
-    this.createRightMountains(roadSpline)
+    this.createRightMountains(roadSpline);
+    this.createCenterMountains(roadSpline);
+    this.createFence(centerLineSpline);
+    // this.createLeftMountains(roadSpline)
   }
 
-  // private getPerpendicularCurve(startCurve: THREE.CatmullRomCurve3, dx: number): THREE.CatmullRomCurve3 {
-  //   const points = startCurve.getPoints(100); // Get points along the curve
-  //   const perpendicularPoints = [];
+  private createFence(startCurve: THREE.CatmullRomCurve3) {
+    const count = 50;
+    const curve = startCurve; // this.getPerpendicularCurve(startCurve, -this.pathWidth * 0.5);
 
-  //   for (let i = 0; i < points.length; i++) {
-  //     const point = points[i];
-  //     const tangent = startCurve.getTangent(i / (points.length - 1)).normalize(); // Get tangent vector
+    const points = curve.getPoints(count);
 
-  //     // Calculate perpendicular vector in the XY plane
-  //     const perpendicular = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
+    const view = ThreeHelper.createModelView('models/pirates/Environment_Dock_Pole.gltf');
+    const geometry = ThreeHelper.findGeometry(view);
+    const material = ThreeHelper.findMaterial(view);
 
-  //     // Offset point by dx along the perpendicular vector
-  //     const newPoint = new THREE.Vector3(
-  //       point.x + perpendicular.x * dx,
-  //       point.y + perpendicular.y * dx,
-  //       point.z + perpendicular.z * dx
-  //     );
+    if(geometry && material) {
+      const mesh = new THREE.InstancedMesh(geometry, material, count);
+      this.add(mesh);
 
-  //     perpendicularPoints.push(newPoint);
-  //   }
+      const matrix = new THREE.Matrix4();
+      let index = 0;
 
-  //   return new THREE.CatmullRomCurve3(perpendicularPoints);
-  // }
+      for (let i = 0; i < count; i++) {
+        const x = points[i].x;
+        const z = points[i].z;
+
+        matrix.identity(); // Reset matrix to identity
+        matrix.setPosition(x, 10, z);
+        matrix.scale(new THREE.Vector3(10, 10, 10)); // Set scale to 10
+
+        mesh.setMatrixAt(index++, matrix);
+      }
+    }
+
+    const points2 = [
+      new THREE.Vector3(0, 0, 0),
+      new THREE.Vector3(5, 10, 5),
+      new THREE.Vector3(10, 0, 10)
+    ];
+    
+    // Create a curve based on the points
+    const curve2 = new THREE.CatmullRomCurve3(points2);
+    
+    // Define a circular shape to extrude
+    const radius = 1;
+    const segments = 32;
+    const circleShape = new THREE.Shape();
+    circleShape.moveTo(radius, 0);
+    for (let i = 1; i <= segments; i++) {
+      const theta = (i / segments) * Math.PI * 2;
+      circleShape.lineTo(Math.cos(theta) * radius, Math.sin(theta) * radius);
+    }
+    circleShape.closePath();
+    
+    // Define extrude settings
+    const extrudeSettings = {
+      steps: 100,
+      bevelEnabled: false,
+      extrudePath: curve2
+    };
+    
+    // Create extrude geometry
+    const extrudeGeometry = new THREE.ExtrudeGeometry(circleShape, extrudeSettings);
+    const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const mesh = new THREE.Mesh(extrudeGeometry, material2);
+    
+    // Add the mesh to the scene
+    this.add(mesh);
+
+    mesh.position.y = 20;
+  }
 
   private getPerpendicularCurve(startCurve: THREE.CatmullRomCurve3, dx: number): THREE.CatmullRomCurve3 {
     const points = startCurve.getPoints(100); // Get points along the curve
@@ -236,15 +276,15 @@ export default class Ground extends THREE.Group {
     return new THREE.CatmullRomCurve3(perpendicularPoints);
   }
 
-  private createLeftMountains(startCurve: THREE.CatmullRomCurve3) {
-    const w = 50;
-    const h = 20;
+  private createRightMountains(startCurve: THREE.CatmullRomCurve3) {
+    const w = 70;
+    const h = 40;
 
     const curve = this.getPerpendicularCurve(startCurve, w * 0.5 + this.pathWidth * 0.5 - 1);
     const helper = this.createCurveHelper(curve);
 
     const extrudeSettings = {
-      steps: 300,
+      steps: 100,
       bevelEnabled: false,
       extrudePath: curve,
     };
@@ -255,19 +295,98 @@ export default class Ground extends THREE.Group {
     const circleShape = new THREE.Shape();
 
     circleShape.moveTo( -h * 0.5, w * 0.4 );
+    // circleShape.moveTo( 0, w * 0.45 );
     circleShape.lineTo( h * 0.5, w * 0.5 );
+    // circleShape.lineTo( h * 0.5, 0 );
     circleShape.lineTo( h * 0.5, -w * 0.5 );
-    circleShape.lineTo( -h * 0.4, -w * 0.2 );
+    // circleShape.lineTo( h * 2, -w * 0.24 );
+    circleShape.lineTo( h * 0.25, -w * 0.4 );
+    circleShape.lineTo( -h * 0.01, -w * 0.3 );
+    circleShape.lineTo( -h * 0.25, -w * 0.15 );
+    circleShape.lineTo( -h * 0.5, -w * 0 );
+    circleShape.lineTo( -h * 0.5, w * 0.1 );
+    circleShape.lineTo( -h * 0.5, w * 0.2 );
+    circleShape.lineTo( -h * 0.5, w * 0.3 );
+
+    circleShape.closePath();
 
     const geometry = new THREE.ExtrudeGeometry( circleShape, extrudeSettings );
-    geometry.translate(0, h * 0.5, 0);
-    const material = new THREE.MeshLambertMaterial( { color: this.sandColor, wireframe: false } );
+    geometry.translate(0, h * 0.4, 0);
+    // const material = new THREE.MeshLambertMaterial( { color: this.stoneColor, wireframe: false } );
+
+    const material = new CustomShaderMaterial({
+      baseMaterial: THREE.MeshStandardMaterial,
+      vertexShader: groundVertexShader,
+      fragmentShader: groundFragmentShader,
+      uniforms: this.mountainsUniforms,
+      silent: true,
+  
+      metalness: 0,
+      roughness: 0.8,
+      color: this.stoneColor,
+      flatShading: true,
+    })
+
+    const mesh = new THREE.Mesh( geometry, material );
+
+    this.add( mesh );
+
+    // this.noiseGeometry(mesh);
+  }
+
+  private createCenterMountains(startCurve: THREE.CatmullRomCurve3) {
+    const w = 40;
+    const h = 5;
+
+    const curve = this.getPerpendicularCurve(startCurve, -this.pathWidth * 0.5 + 1);
+    const helper = this.createCurveHelper(curve);
+
+    const points = curve.getPoints(100);
+
+    const extrudeSettings = {
+      steps: 200,
+      depth: h,
+      // bevelEnabled: true,
+      // bevelThickness: 1,
+      // bevelSize: w,
+      // bevelOffset: 0,
+      // bevelSegments: 20
+    };
+
+    // helper.position.y = h + 0.1;
+
+    const circleShape = new THREE.Shape();
+
+    points.forEach((p, i) => {
+      if(i === 0) {
+        circleShape.moveTo( p.x, p.z );
+      }else{
+        circleShape.lineTo( p.x, p.z );
+      }
+    })
+
+    const geometry = new THREE.ExtrudeGeometry( circleShape, extrudeSettings );
+    geometry.rotateX(Math.PI * 0.5);
+    geometry.translate(0, h, 0);
+
+    const material = new CustomShaderMaterial({
+      baseMaterial: THREE.MeshStandardMaterial,
+      vertexShader: groundVertexShader,
+      fragmentShader: groundFragmentShader,
+      uniforms: this.mountainsUniforms2,
+      silent: true,
+  
+      metalness: 0,
+      roughness: 0.8,
+      color: this.stoneColor,
+      flatShading: true,
+    })
     const mesh = new THREE.Mesh( geometry, material );
 
     this.add( mesh );
   }
 
-  private createRightMountains(startCurve: THREE.CatmullRomCurve3) {
+  private createLeftMountains(startCurve: THREE.CatmullRomCurve3) {
     const w = 40;
     const h = 20;
 
@@ -340,7 +459,7 @@ export default class Ground extends THREE.Group {
     baseMaterial: THREE.MeshStandardMaterial,
     vertexShader: groundVertexShader,
     fragmentShader: groundFragmentShader,
-    uniforms: this.uniforms,
+    uniforms: this.mountainsUniforms,
     silent: true,
 
     // MeshPhysicalMaterial
@@ -354,205 +473,5 @@ export default class Ground extends THREE.Group {
     this.add(ground)
 
     console.log('vertices', ground.geometry.attributes.position.count)
-  }
-
-  private resetVerticesView() {
-    this.view.geometry.dispose();
-    this.material.dispose();
-    this.remove(this.view);
-    this.init();
-  }
-
-  private getClosestPerpendicularPointOnCurve(curve: THREE.CatmullRomCurve3, x: number, y: number, width: number) {
-    let closestPoint = null;
-    let minDistance = Infinity;
-  
-    // Sample points along the curve to find the closest perpendicular point
-    const divisions = 100; // Increase for higher accuracy
-    for (let i = 0; i <= divisions; i++) {
-      // const t = i / divisions;
-      // const point = curve.getPoint(t);
-
-      const point = curve.getPoint(curve.getUtoTmapping((x / width) + 0.5, 0));
-
-      const distance = Math.sqrt(Math.pow(point.x - x, 2) + Math.pow(point.y - y, 2));
-  
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestPoint = point;
-      }
-    }
-  
-    return closestPoint;
-  }
-  
-
-  private initTraceByVertices() {
-    const s = 1.2;
-    const res = this.resolution;
-    const width = SIZES.width / s;
-    const length = SIZES.length / s;
-
-    const widthSegments = width * res;
-    const lengthSegments = length * res;
-
-    const geometry = new THREE.PlaneGeometry(width, length, widthSegments, lengthSegments);
-    const material = this.material = new THREE.MeshStandardMaterial({ color: 0x228B22 });
-
-    const plane = this.view = new THREE.Mesh(geometry, material);
-
-    const helpersGroup = new THREE.Group();
-    this.add(helpersGroup);
-
-    helpersGroup.scale.set(s, s, s);
-
-    const curvePoints = [
-      new THREE.Vector2(-50, -20),
-      new THREE.Vector2(-30, -10),
-      new THREE.Vector2(-10, -10),
-      new THREE.Vector2(10, 10),
-      new THREE.Vector2(30, 20),
-      new THREE.Vector2(50, 50)
-    ];
-
-    curvePoints.forEach(p => {
-      p.x = p.x / 100 * width;
-      p.y = p.y / 100 * length;
-
-      const point = new THREE.Mesh(new THREE.SphereGeometry(5), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-      point.position.set(p.x, 5, p.y);
-      helpersGroup.add(point);
-    });
-
-    const curve = new THREE.CatmullRomCurve3(curvePoints.map(p => new THREE.Vector3(p.x, -p.y, 0)));
-
-    const pathWidth = this.pathWidth / s;
-    const mountWidth = this.mountWidth / s;
-    const minMountHeight = this.minMountHeight / s;
-    const mountRandomHeight = this.mountRandomHeight / s;
-    const maxGroundHeight = this.maxGroundHeight / s;
-
-    const vertices = plane.geometry.attributes.position.array;
-    for (let i = 0; i < vertices.length; i += 3) {
-      const x = vertices[i];
-      const y = vertices[i + 1];
-      const z = vertices[i + 2];
-
-      // Get the closest point on the curve to the current vertex
-      const pointOnCurve = curve.getPoint(curve.getUtoTmapping((x / width) + 0.5, 0));
-
-      // Define the path width
-
-      
-      // const tangent = curve.getTangent(curve.getUtoTmapping((x / width) + 0.5, 0)).normalize();
-      // const perpendicular = new THREE.Vector3(-tangent.y, tangent.x, 0).normalize();
-      
-      // const perpendicularPointOnCurve = curve.getPointAt((x / width) + 0.5);
-      // const tangent = curve.getTangent((x / width) + 0.5).normalize();
-      
-      
-      if (i % 1800 === 0) {
-        const point = new THREE.Mesh(new THREE.SphereGeometry(3), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
-        point.position.set(pointOnCurve.x, 8, -pointOnCurve.y);
-        helpersGroup.add(point);
-      }
-
-      const closestPoint = this.getClosestPerpendicularPointOnCurve(curve, x, y, width);
-      
-      
-      if(closestPoint) {
-
-        const distance = Math.sqrt(Math.pow(closestPoint.y - y, 2));
-
-        if (Math.abs(distance) < pathWidth * 0.5) {
-          vertices[i + 2] = 0; // Flat path along the curve
-        } else if (Math.abs(distance) >= pathWidth * 0.5 && Math.abs(distance) < pathWidth * 0.5 + mountWidth) {
-          vertices[i + 2] = Math.random() * mountRandomHeight + minMountHeight; // Mountains on left and right
-        } else {
-          vertices[i + 2] = Math.random() * maxGroundHeight; // Random ground elsewhere
-        }
-      }
-    }
-
-    plane.geometry.attributes.position.needsUpdate = true;
-    plane.geometry.computeVertexNormals();
-
-    this.add(plane);
-
-    plane.rotation.x = -Math.PI / 2;
-    plane.scale.set(s, s, s);
-    console.log('vertices', plane.geometry.attributes.position.count);
-
-    // plane.position.y = 10;
-
-    // this.initMaterial();
-    // this.initView();
-  }
-
-  private initMaterial() {
-    // const texture = ALL_ASSETS.textures['ground/ground-noise.jpg'];
-    const texture = ALL_ASSETS.textures['ground/ground-alphamap-2.png'];
-    const sand = ALL_ASSETS.textures['ground/sand2.png'];
-    sand.wrapS = THREE.RepeatWrapping;
-    sand.wrapT = THREE.RepeatWrapping;
-
-    //set texture scale
-    sand.repeat.set(1, 1);
-
-    this.material = new THREE.MeshStandardMaterial({
-      color: 0xcaa341,
-      map: sand,
-      displacementMap: texture,
-      displacementScale: 3,
-    });
-  }
-
-  private initView() {
-    const width = this.size;
-    const height = this.size;
-    const xCount = Math.ceil(SIZES.width / this.size);
-    const zCount = Math.ceil(SIZES.length / this.size);
-    const instances = xCount * zCount;
-
-    const view = this.view = new THREE.InstancedMesh(this.createPartGeometry(), this.material, instances);
-
-    const matrix = new THREE.Matrix4();
-    let index = 0;
-
-    const startX = -width * (xCount - 1) * 0.5;
-    const startZ = -height * (zCount - 1);
-
-    const offset = -0.01;
-
-    for (let i = 0; i < xCount; i++) {
-      for (let j = 0; j < zCount; j++) {
-        const offsetX = i * (width + offset);
-        const offsetZ = j * (height + offset);
-
-        // matrix.identity();
-
-        matrix.setPosition(startX + offsetX, 0, startZ + offsetZ);
-        view.setMatrixAt(index++, matrix);
-      }
-    }
-
-    this.add(view);
-
-    // console.log('vertices', view.geometry.attributes.position.count);
-  }
-
-  private createPartGeometry() {
-    const width = this.size;
-    const height = this.size;
-
-    const res = this.resolution;
-
-    const widthSegments = this.size * res;
-    const heightSegments = this.size * res;
-    const geometry = new THREE.PlaneGeometry(width, height, widthSegments, heightSegments);
-
-    geometry.rotateX(-Math.PI / 2);
-
-    return geometry;
   }
 }
