@@ -192,18 +192,18 @@ export default class Stadium extends THREE.Group {
     const zeroPoint = centerLineSpline.getPointAt(0);
     const finishLinePoint = zeroPoint.clone();
 
-    console.log(ALL_ASSETS.textures)
+    const width = 10;
 
     const texture = ALL_ASSETS.textures['finish.png'];
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(2, 1);
+    texture.repeat.set(this.roadWidth * 0.2, width * 0.2);
 
     const material = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide } );
-    const geometry = new THREE.PlaneGeometry( this.roadWidth, 10 );
+    const geometry = new THREE.PlaneGeometry( this.roadWidth, width );
     const finishLine = new THREE.Mesh( geometry, material );
 
     finishLine.position.copy(finishLinePoint);
-    finishLine.position.y += 10;
+    finishLine.position.y += 2.5;
     finishLine.rotateX(Math.PI * 0.5);
 
     this.add(finishLine);
