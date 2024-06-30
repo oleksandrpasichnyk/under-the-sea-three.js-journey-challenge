@@ -7,9 +7,10 @@ import groundFragmentShader from '../../../shaders/ground/fragment.glsl'
 import ThreeHelper from '../../../helpers/three-hepler';
 
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
-import Fence from '../../environment/fence';
+import Fence from './fence';
 import { ALL_ASSETS } from '../../../loader/loader';
 import { Gates } from './gates';
+import { TribuneSits } from './tribune-sits';
 
 export default class Stadium extends THREE.Group {
   private roadWidth: number;
@@ -187,6 +188,13 @@ export default class Stadium extends THREE.Group {
 
     this.initGates(tribunes, centerLineSpline);
     this.initFinishLine(centerLineSpline);
+    this.initTribuneSits(tribunes, centerLineSpline);
+  }
+
+  private initTribuneSits(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3) {
+    const curve = ThreeHelper.getPerpendicularCurve(centerLineSpline, this.roadWidth * 0.5 + this.borderWidth * 0.5);
+    const tribuneSits = new TribuneSits(curve, tribunes, this.tribuneHeight * 0.2);
+    this.add(tribuneSits);
   }
 
   private initFinishLine(centerLineSpline: THREE.CatmullRomCurve3) {
