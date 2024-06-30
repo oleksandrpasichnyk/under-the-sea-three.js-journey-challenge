@@ -34,7 +34,7 @@ export default class Stadium extends THREE.Group {
     this.stoneColor = 0x777777;
     this.stoneColor2 = 0xcaa341;
 
-    this.roadWidth = 100;
+    this.roadWidth = 50;
 
 
     this.details = new EnvDetails();
@@ -84,7 +84,7 @@ export default class Stadium extends THREE.Group {
 
     for (let i = 0; i < numPoints; i++) {
       const angle = (i / numPoints) * Math.PI * 2;
-      const randomDeviation =  i < 2 || i > numPoints - 3 ? 20 : THREE.MathUtils.randFloatSpread(70);
+      const randomDeviation =  i < 2 || i > numPoints - 3 ? 20 : THREE.MathUtils.randFloatSpread(50);
 
       const x = Math.cos(angle) * (R + randomDeviation);
       const z = Math.sin(angle) * (R + randomDeviation);

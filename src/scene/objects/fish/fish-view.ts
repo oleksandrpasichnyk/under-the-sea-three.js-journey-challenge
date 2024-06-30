@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import ThreeHelper from '../../../helpers/three-hepler';
 import { FISH_ANIMATION_TYPE, FishAnimationsController } from './fish-animations-controller';
-import { RacingConfig, ViewConfig } from './fish.types';
+import { PlayerRacingConfig, RacingConfig, ViewConfig } from './fish.types';
 import { RacingController } from './racing-controller';
 
 export default class Fish extends THREE.Group {
@@ -10,12 +10,12 @@ export default class Fish extends THREE.Group {
   private animationFactor: number = 5;
   private boundingBox!: THREE.Vector3;
 
-  protected racingConfig: RacingConfig;
+  protected racingConfig: RacingConfig | PlayerRacingConfig;
   protected viewConfig: ViewConfig;
 
   protected racingController!: RacingController;
 
-  constructor(racingConfig: RacingConfig, viewConfig: ViewConfig) {
+  constructor(racingConfig: RacingConfig | PlayerRacingConfig, viewConfig: ViewConfig) {
     super();
 
     this.racingConfig = racingConfig;

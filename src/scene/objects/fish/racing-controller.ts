@@ -1,18 +1,18 @@
 import * as THREE from 'three';
 
 import Fish from "./fish-view";
-import { RacingConfig } from "./fish.types";
+import { PlayerRacingConfig, RacingConfig } from "./fish.types";
 
 export class RacingController {
   private player: Fish;
-  private racingConfig: RacingConfig;
+  private racingConfig: RacingConfig | PlayerRacingConfig;
 
   protected speed: number = 0;
   protected rotationSpeed: number = 0;
 
   private realSpeed: number = 0;
 
-  constructor(player: Fish, racingConfig: RacingConfig) {
+  constructor(player: Fish, racingConfig: RacingConfig | PlayerRacingConfig) {
     this.player = player;
     this.racingConfig = racingConfig;
 

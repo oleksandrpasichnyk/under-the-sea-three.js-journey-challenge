@@ -52,18 +52,25 @@ export default class PlayersController {
       const offset = -roadWidth * 0.5 + step * (i + 1);
       const raceCurve = ThreeHelper.getPerpendicularCurve(centerCurve, offset);
       
+      const points = raceCurve.getPoints(50);
+      const newRaceCurve = new THREE.CatmullRomCurve3(points); 
+
       if(i === playerPositionIndex) {
         this.setStartPos(this.player, raceCurve);
 
         continue;
       }
 
-      // const helper = ThreeHelper.createCurveHelper(raceCurve);
-      // this.stadium.add(helper);
-      // helper.position.y = 3;
+      // simplify curve
+      
 
-      this.bots[botIndex].setRaceCurve(raceCurve);
-      this.setStartPos(this.bots[botIndex], raceCurve);
+
+      const helper = ThreeHelper.createCurveHelper(newRaceCurve);
+      this.stadium.add(helper);
+      helper.position.y = 3;
+
+      this.bots[botIndex].setRaceCurve(newRaceCurve);
+      this.setStartPos(this.bots[botIndex], newRaceCurve);
       botIndex++;
 
     }
@@ -80,10 +87,9 @@ export default class PlayersController {
 
   public update(dt: number) {
     this.player.update(dt);
-    // bots set positions
-
-    // bots update
-
-    // player update
+    
+    this.bots.forEach(bot => {
+      bot.update(dt);
+    });
   }
 }

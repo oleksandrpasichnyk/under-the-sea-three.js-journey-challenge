@@ -1,6 +1,6 @@
-import { RacingConfig, ViewConfig } from "../fish.types";
+import { PlayerRacingConfig, ViewConfig } from "../fish.types";
 
-export const PLAYER_RACING_CONFIG: RacingConfig = {
+export const PLAYER_RACING_CONFIG: PlayerRacingConfig = {
   maxSpeed: 50,
   maxTurboSpeed: 100,
   acceleration: 4,

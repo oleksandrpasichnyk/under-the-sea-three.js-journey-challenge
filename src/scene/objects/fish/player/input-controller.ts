@@ -1,4 +1,4 @@
-import { RacingConfig } from "../fish.types";
+import { PlayerRacingConfig } from "../fish.types";
 
 const enum KEYS {
   UP = 'KeyW',
@@ -10,14 +10,14 @@ const enum KEYS {
 }
 
 export class InputController {
-  private config: RacingConfig;
+  private config: PlayerRacingConfig;
 
   private _speed: number = 0;
   private _rotationSpeed: number = 0;
 
   private keyStates: any;
 
-  constructor(config: RacingConfig) {
+  constructor(config: PlayerRacingConfig) {
     this.config = config;
 
     this.keyStates = {};

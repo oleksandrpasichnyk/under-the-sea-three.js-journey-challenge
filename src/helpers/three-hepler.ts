@@ -119,14 +119,14 @@ export default class ThreeHelper {
   }
 
   static getCurvePosition(curve: THREE.CatmullRomCurve3, t: number) {
-    const point = curve.getPoint(t);
+    const point = curve.getPoint(1 - t);
     return new THREE.Vector3(point.x, point.y, point.z);
   }
 
   static getCurveRotation(curve: THREE.CatmullRomCurve3, t: number) {
-    const tangent = curve.getTangent(t);
+    const tangent = curve.getTangent(1 - t);
     const axis = new THREE.Vector3(0, 1, 0);
-    const angle = Math.atan2(tangent.z, tangent.x);
+    const angle = Math.atan2(tangent.x, tangent.z);
 
     return new THREE.Quaternion().setFromAxisAngle(axis, angle);
   }

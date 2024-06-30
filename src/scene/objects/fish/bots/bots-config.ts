@@ -2,17 +2,31 @@ import { FISHES } from "../../../../loader/models-list";
 import { BOT_TYPE } from "../fish.types"
 
 export const BOTS_RACING_CONFIG = {
-  maxSpeed: 50,
-  maxTurboSpeed: 100,
-  acceleration: 4,
-  turboAcceleration: 50,
-  deceleration: 3,
-  breakSpeed: 10, // to speed
-  handBreakSpeed: 15, // to speed
-  rotationBreakSpeed: 6, // to speed
-  rotationAcceleration: 2,
-  rotationDeceleration: 3,
-  maxRotationSpeed: 3.5,
+  [BOT_TYPE.ONE]: {
+    maxSpeed: 40,
+    acceleration: 7,
+    lerp: 0.1,
+  },
+  [BOT_TYPE.TWO]: {
+    maxSpeed: 45,
+    acceleration: 8,
+    lerp: 0.03,
+  },
+  [BOT_TYPE.THREE]: {
+    maxSpeed: 43,
+    acceleration: 8,
+    lerp: 0.05,
+  },
+  [BOT_TYPE.FOUR]: {
+    maxSpeed: 42,
+    acceleration: 7.5,
+    lerp: 0.04,
+  },
+  [BOT_TYPE.FIVE]: {
+    maxSpeed: 40,
+    acceleration: 8,
+    lerp: 0.07,
+  },
 }
 
 const randomModels = [...FISHES].sort(() => Math.random() - 0.5).slice(0, 5);

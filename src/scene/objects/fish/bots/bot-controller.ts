@@ -1,41 +1,48 @@
 import * as THREE from 'three';
 import { RacingConfig } from "../fish.types";
+import ThreeHelper from '../../../../helpers/three-hepler';
 
 export class BotController {
-  private config: RacingConfig;
+  private racingConfig: RacingConfig;
 
   private _speed: number = 0;
-  private _rotationSpeed: number = 0;
+  private _position: THREE.Vector3 = new THREE.Vector3();
+  private _rotation: THREE.Quaternion = new THREE.Quaternion();
+
+  private prewPos: number = 0;
 
   private racingCurve!: THREE.CatmullRomCurve3;
 
-  constructor(config: RacingConfig) {
-    this.config = config;
+  constructor(racingConfig: RacingConfig) {
+    this.racingConfig = racingConfig;
   }
 
   public setRaceCurve(racingCurve: THREE.CatmullRomCurve3) {
     this.racingCurve = racingCurve;
   }
 
-  public getSpeed() {
-    return this._speed;
+  public getPosition() {
+    return this._position;
   }
 
-  public getRotationSpeed() {
-    return this._rotationSpeed;
+  public getRotation() {
+    return this._rotation;
   }
 
   public update(dt: number) {
     if(!this.racingCurve) {
       return;
     }
+ 
+    this._speed = Math.min(this._speed + this.racingConfig.acceleration * dt, this.racingConfig.maxSpeed);
+    
+    this.prewPos += this._speed * dt;
+    
+    const t = this.prewPos / this.racingCurve.getLength();
 
-    let speed = this._speed;
-    let rotationSpeed = this._rotationSpeed;
-
-    // todo
-
-    this._speed = speed;
-    this._rotationSpeed = rotationSpeed;
+    if(t <= 1) {
+      this._position = ThreeHelper.getCurvePosition(this.racingCurve, t);
+      this._rotation = ThreeHelper.getCurveRotation(this.racingCurve, t);
+    }
   }
 }
