@@ -188,12 +188,13 @@ export default class Stadium extends THREE.Group {
 
     this.initGates(tribunes, centerLineSpline);
     this.initFinishLine(centerLineSpline);
-    this.initTribuneSits(tribunes, centerLineSpline);
+    this.initTribuneSits(tribunes, centerLineSpline, this.tribuneHeight * 0.2);
+    this.initTribuneSits(tribunes, centerLineSpline, this.tribuneHeight * 0.4);
   }
 
-  private initTribuneSits(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3) {
+  private initTribuneSits(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3, y: number) {
     const curve = ThreeHelper.getPerpendicularCurve(centerLineSpline, this.roadWidth * 0.5 + this.borderWidth * 0.5);
-    const tribuneSits = new TribuneSits(curve, tribunes, this.tribuneHeight * 0.2);
+    const tribuneSits = new TribuneSits(curve, tribunes, y);
     this.add(tribuneSits);
   }
 
