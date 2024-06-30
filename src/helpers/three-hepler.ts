@@ -103,4 +103,18 @@ export default class ThreeHelper {
 
     return mesh;
   }
+
+  static createShapeByPoints(points: THREE.Vector3[]) {
+    const shape = new THREE.Shape();
+
+    points.forEach((p, i) => {
+      if(i === 0) {
+        shape.moveTo( p.x, p.z );
+      }else{
+        shape.lineTo( p.x, p.z );
+      }
+    })
+
+    return shape;
+  }
 }

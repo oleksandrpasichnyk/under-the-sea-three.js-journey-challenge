@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import { SIZES } from '../../config';
-import { ALL_ASSETS } from '../../loader/loader';
 import EnvDetails from './details';
 
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
@@ -8,21 +6,16 @@ import groundVertexShader from '../../shaders/ground/vertex.glsl'
 import groundFragmentShader from '../../shaders/ground/fragment.glsl'
 import ThreeHelper from '../../helpers/three-hepler';
 
-import { SUBTRACTION, INTERSECTION, Brush, Evaluator } from 'three-bvh-csg';
+import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 import Fence from './fence';
 
 export default class Stadium extends THREE.Group {
-  private size: number;
-  private resolution: number;
   private roadWidth: number;
 
   private mountWidth: number = 70;
   private mountHeight: number = 40;
 
   private borderWidth: number = 40;
-
-  private material!: THREE.MeshStandardMaterial;
-  private view!: THREE.Mesh;
 
   private details!: EnvDetails;
   private mountainsUniforms: any;
@@ -34,9 +27,6 @@ export default class Stadium extends THREE.Group {
 
   constructor() {
     super();
-    this.size = 50;
-    this.resolution = 5;
-
     this.sandColor = 0xcaa341;
     this.stoneColor = 0x777777;
 
@@ -47,11 +37,8 @@ export default class Stadium extends THREE.Group {
     this.add(this.details);
 
     this.mountainsUniforms = {
-      uTime: new THREE.Uniform(0),
       uPositionFrequency: new THREE.Uniform(0.2),
       uStrength: new THREE.Uniform(12.0),
-      uWarpFrequency: new THREE.Uniform(5),
-      uWarpStrength: new THREE.Uniform(0.5),
     };
 
     this.mountainsUniforms2 = {
@@ -60,7 +47,6 @@ export default class Stadium extends THREE.Group {
     };
 
     this.roadUniforms = {
-      uTime: new THREE.Uniform(0),
       uPositionFrequency: new THREE.Uniform(0.2),
       uStrength: new THREE.Uniform(1.0),
       uWarpFrequency: new THREE.Uniform(5),
@@ -71,14 +57,12 @@ export default class Stadium extends THREE.Group {
   }
 
   public setGui(gui: any) {
-    const folderGround = gui.addFolder('Ground');
+    // const folderGround = gui.addFolder('Ground');
 
-
-    folderGround.add(this, 'resolution', 0.1, 10, 0.01).name('resolution');
-    folderGround.add(this.mountainsUniforms.uPositionFrequency, 'value', 0, 10, 0.1).name('uPositionFrequency')
-    folderGround.add(this.mountainsUniforms.uStrength, 'value', 0, 100, 0.1).name('uStrength')
-    folderGround.add(this.mountainsUniforms.uWarpFrequency, 'value', 0, 100, 0.1).name('uWarpFrequency')
-    folderGround.add(this.mountainsUniforms.uWarpStrength, 'value', 0, 100, 0.1).name('uWarpStrength')
+    // folderGround.add(this.mountainsUniforms.uPositionFrequency, 'value', 0, 10, 0.1).name('uPositionFrequency')
+    // folderGround.add(this.mountainsUniforms.uStrength, 'value', 0, 100, 0.1).name('uStrength')
+    // folderGround.add(this.mountainsUniforms.uWarpFrequency, 'value', 0, 100, 0.1).name('uWarpFrequency')
+    // folderGround.add(this.mountainsUniforms.uWarpStrength, 'value', 0, 100, 0.1).name('uWarpStrength')
   }
 
   private createRoadCurve() {
@@ -179,28 +163,32 @@ export default class Stadium extends THREE.Group {
 
     roadSpline.curveType = "catmullrom";
     centerLineSpline.curveType = "catmullrom";
-
-    this.createRoadShape(roadSpline);
-    // this.createRoadCenterLine(centerLineSpline);
     
-    this.createRightMountains(roadSpline);
-    this.createCenterMountains(roadSpline);
+    const tribunes = this.createTribunes(roadSpline);
+    this.createCenter(roadSpline);
     this.createFence(centerLineSpline);
     
     this.createRoad(roadSpline);
     this.createRoadBorder(centerLineSpline);
-    // this.createRoadBorder(centerLineSpline);
-    // this.createRoadBorder(roadSpline);
-    // this.createLeftMountains(roadSpline)
+
+    this.initGates(tribunes, centerLineSpline);
+  }
+
+  private initGates(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3) {
+    const gatesPoint = centerLineSpline.getPointAt(0);
+
+    // create sphere
+
+    const geometry = new THREE.SphereGeometry( 5, 32, 32 );
+    const material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+    const sphere = new THREE.Mesh( geometry, material );
+
+    sphere.position.copy(gatesPoint);
+
+    this.add( sphere );
   }
 
   private createRoadBorder(centerLineSpline: THREE.CatmullRomCurve3) {
-    // SUBTRACTION road - centerShape
-    
-    // create extrude geom for road right side
-    // create extrude geom for road right side + border width and offset
-    // subtract the two extrude geom
-
     const h = 5;
 
     const curve1 = ThreeHelper.getPerpendicularCurve(centerLineSpline, this.roadWidth * 0.5);
@@ -211,7 +199,7 @@ export default class Stadium extends THREE.Group {
       depth: h + 1,
     };
 
-    const shape1 = this.createShapeByPoints(points1);
+    const shape1 = ThreeHelper.createShapeByPoints(points1);
 
     const geometry1 = new THREE.ExtrudeGeometry( shape1, extrudeSettings );
     geometry1.rotateX(Math.PI * 0.5);
@@ -224,7 +212,7 @@ export default class Stadium extends THREE.Group {
       depth: h,
     };
 
-    const shape2 = this.createShapeByPoints(points2);
+    const shape2 = ThreeHelper.createShapeByPoints(points2);
 
     const geometry2 = new THREE.ExtrudeGeometry( shape2, extrudeSettings2 );
     geometry2.rotateX(Math.PI * 0.5);
@@ -233,22 +221,11 @@ export default class Stadium extends THREE.Group {
     const result = evaluator.evaluate( new Brush(geometry2), new Brush(geometry1), SUBTRACTION );
 
     const material = new THREE.MeshLambertMaterial( { color: this.stoneColor, wireframe: false } );
-    const mesh = new THREE.Mesh( result.geometry, material );
-    // const mesh = new THREE.Mesh( geometry1, material );
+    const roadBorder = new THREE.Mesh( result.geometry, material );
 
-    this.add( mesh );
+    this.add( roadBorder );
 
-    mesh.position.y = h;
-
-    // const brush1 = new Brush( new SphereGeometry() );
-    // brush1.updateMatrixWorld();
-
-    // const brush2 = new Brush( new BoxGeometry() );
-    // brush2.position.y = 0.5;
-    // brush2.updateMatrixWorld();
-
-    // const evaluator = new Evaluator();
-    // const result1 = evaluator.evaluate( brush1, brush2, SUBTRACTION );
+    roadBorder.position.y = h;
   }
 
   private createFence(startCurve: THREE.CatmullRomCurve3) {
@@ -271,7 +248,7 @@ export default class Stadium extends THREE.Group {
     this.add(fence2);
   }
 
-  private createRightMountains(startCurve: THREE.CatmullRomCurve3) {
+  private createTribunes(startCurve: THREE.CatmullRomCurve3) {
     const w = this.mountWidth;
     const h = this.mountHeight;
 
@@ -316,23 +293,11 @@ export default class Stadium extends THREE.Group {
 
     const mesh = new THREE.Mesh( geometry, material );
     this.add( mesh );
+
+    return mesh;
   }
 
-  private createShapeByPoints(points: THREE.Vector3[]) {
-    const shape = new THREE.Shape();
-
-    points.forEach((p, i) => {
-      if(i === 0) {
-        shape.moveTo( p.x, p.z );
-      }else{
-        shape.lineTo( p.x, p.z );
-      }
-    })
-
-    return shape;
-  }
-
-  private createCenterMountains(startCurve: THREE.CatmullRomCurve3) {
+  private createCenter(startCurve: THREE.CatmullRomCurve3) {
     const h = 5;
 
     const curve = ThreeHelper.getPerpendicularCurve(startCurve, -this.roadWidth * 0.5 + 1);
@@ -343,7 +308,7 @@ export default class Stadium extends THREE.Group {
       depth: h,
     };
 
-    const shape = this.createShapeByPoints(points);
+    const shape = ThreeHelper.createShapeByPoints(points);
 
     const geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
     geometry.rotateX(Math.PI * 0.5);
@@ -365,30 +330,6 @@ export default class Stadium extends THREE.Group {
 
     this.add( mesh );
 
-    return mesh;
-  }
-
-  private createRoadShape(startCurve: THREE.CatmullRomCurve3) {
-    const h = 20;
-
-    const curve = ThreeHelper.getPerpendicularCurve(startCurve, this.roadWidth * 0.5);
-    const points = curve.getPoints(200);
-
-    const extrudeSettings = {
-      steps: 2,
-      depth: h,
-    };
-
-    const shape = this.createShapeByPoints(points);
-
-    const geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
-    geometry.rotateX(Math.PI * 0.5);
-
-    const mesh = new THREE.Mesh( geometry );
-
-    mesh.position.y = h * 0.5;
-
-    // this.add( mesh );
     return mesh;
   }
 }
