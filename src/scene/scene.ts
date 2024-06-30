@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { resizeRendererToDisplaySize } from '../helpers/responsiveness';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import GUI from 'lil-gui';
-import Stadium from './environment/stadium';
+import Stadium from './objects/stadium/stadium';
 import Background from './environment/background';
 import TopWater from './environment/water';
 import { SIZES } from '../config';

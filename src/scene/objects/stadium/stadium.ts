@@ -1,14 +1,15 @@
 import * as THREE from 'three';
-import EnvDetails from './details';
+import EnvDetails from '../../environment/details';
 
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
-import groundVertexShader from '../../shaders/ground/vertex.glsl'
-import groundFragmentShader from '../../shaders/ground/fragment.glsl'
-import ThreeHelper from '../../helpers/three-hepler';
+import groundVertexShader from '../../../shaders/ground/vertex.glsl'
+import groundFragmentShader from '../../../shaders/ground/fragment.glsl'
+import ThreeHelper from '../../../helpers/three-hepler';
 
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
-import Fence from './fence';
-import { ALL_ASSETS } from '../../loader/loader';
+import Fence from '../../environment/fence';
+import { ALL_ASSETS } from '../../../loader/loader';
+import { Gates } from './gates';
 
 export default class Stadium extends THREE.Group {
   private roadWidth: number;
@@ -214,88 +215,11 @@ export default class Stadium extends THREE.Group {
     const gatesPoint = zeroPoint.clone();
     gatesPoint.x += this.roadWidth * 0.5 + this.borderWidth + this.tribuneWidth - 8;
 
-    const h = this.tribuneHeight * 0.6;
-    const w = h * 1;
-    const t = 10;
-    const d = 20;
-
-    const gatesShapeInner = new THREE.Shape();
-
-    gatesShapeInner.moveTo( -w * 0.5, 0 );
-    gatesShapeInner.lineTo( -w * 0.5, h - w * 0.5 );
-    gatesShapeInner.arc( w * 0.5, 0, w * 0.5, Math.PI, 0, true );
-    gatesShapeInner.lineTo( w * 0.5, 0 );
-
-    gatesShapeInner.closePath();
-
-    const gatesShapeOuter = new THREE.Shape();
-
-    gatesShapeOuter.moveTo( -w * 0.5 - t, 0 );
-    gatesShapeOuter.lineTo( -w * 0.5 - t, h - w * 0.5 );
-    gatesShapeOuter.arc( w * 0.5 + t, 0, w * 0.5 + t, Math.PI, 0, true );
-    gatesShapeOuter.lineTo( w * 0.5 + t, 0 );
-
-    gatesShapeOuter.closePath();
-
-    const extrudeSettings = {
-      steps: 2,
-      depth: d + 2,
-    }
-
-    const geometryInner = new THREE.ExtrudeGeometry( gatesShapeInner, extrudeSettings );
-
-    const extrudeSettings2 = {
-      steps: 2,
-      depth: d,
-    }
-
-    const geometryOuter = new THREE.ExtrudeGeometry( gatesShapeOuter, extrudeSettings2 )
-
-    const evaluator = new Evaluator();
-    const gatesRes = evaluator.evaluate( new Brush(geometryOuter), new Brush(geometryInner), SUBTRACTION );
-
-    const material = new THREE.MeshLambertMaterial( { color: this.stoneColor2, wireframe: false } );
-    const gates = new THREE.Mesh(gatesRes.geometry, material);
+    const gates = new Gates(this.tribuneHeight * 0.6)
 
     gates.position.copy(gatesPoint);
-    gates.position.y -= 4;
-
-    gates.rotateY(Math.PI * 0.5);
 
     this.add(gates);
-
-
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d')!;
-    canvas.width = 512;
-    canvas.height = 512;
-
-    // Draw background
-    // ctx.fillStyle = '#000000';
-    // ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Set text styles
-    ctx.font = 'Bold 130px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#000000';
-    ctx.fillText('ARENA', canvas.width / 2, canvas.height / 2);
-
-    // Use the canvas as a texture
-    const texture = new THREE.CanvasTexture(canvas);
-
-    // Create a plane geometry and apply the texture
-    const geometry2 = new THREE.PlaneGeometry(24, 12);
-    const material2 = new THREE.MeshBasicMaterial({map: texture, transparent: true, side: THREE.DoubleSide});
-    const plane = new THREE.Mesh(geometry2, material2);
-    this.add(plane);
-
-    plane.position.copy(gates.position);
-
-    plane.position.x += d + 0.5;
-    plane.position.y += h + 3.5;
-
-    plane.rotation.y = Math.PI * 0.5;
   }
 
   private createRoadBorder(centerLineSpline: THREE.CatmullRomCurve3) {

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import Fish from '../objects/fish/fish-view';
-import Stadium from '../environment/stadium';
+import Stadium from '../objects/stadium/stadium';
 import ThreeHelper from '../../helpers/three-hepler';
 import { Bot } from '../objects/fish/bots/bot';
 import { BOT_TYPE } from '../objects/fish/fish.types';
