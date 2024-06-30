@@ -265,17 +265,37 @@ export default class Stadium extends THREE.Group {
     this.add(gates);
 
 
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+    canvas.width = 512;
+    canvas.height = 512;
 
-    // geometryInner.rotateY(Math.PI * 0.5);
-    // geometryInner.translate(gatesPoint.x, gatesPoint.y, gatesPoint.z);
+    // Draw background
+    // ctx.fillStyle = '#000000';
+    // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // const tribunesRes = evaluator.evaluate( new Brush(tribunes.geometry), new Brush(geometryInner), SUBTRACTION );
-    // const newTribunes = new THREE.Mesh(tribunesRes.geometry, tribunes.material);
+    // Set text styles
+    ctx.font = 'Bold 130px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#000000';
+    ctx.fillText('ARENA', canvas.width / 2, canvas.height / 2);
 
-    // this.remove(tribunes);
+    // Use the canvas as a texture
+    const texture = new THREE.CanvasTexture(canvas);
 
-    // this.add(newTribunes);
+    // Create a plane geometry and apply the texture
+    const geometry2 = new THREE.PlaneGeometry(24, 12);
+    const material2 = new THREE.MeshBasicMaterial({map: texture, transparent: true, side: THREE.DoubleSide});
+    const plane = new THREE.Mesh(geometry2, material2);
+    this.add(plane);
 
+    plane.position.copy(gates.position);
+
+    plane.position.x += d + 0.5;
+    plane.position.y += h + 3.5;
+
+    plane.rotation.y = Math.PI * 0.5;
   }
 
   private createRoadBorder(centerLineSpline: THREE.CatmullRomCurve3) {
