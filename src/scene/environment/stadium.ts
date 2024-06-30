@@ -12,8 +12,8 @@ import Fence from './fence';
 export default class Stadium extends THREE.Group {
   private roadWidth: number;
 
-  private mountWidth: number = 70;
-  private mountHeight: number = 40;
+  private tribuneWidth: number = 70;
+  private tribuneHeight: number = 40;
 
   private borderWidth: number = 40;
 
@@ -24,11 +24,13 @@ export default class Stadium extends THREE.Group {
 
   private sandColor: number;
   private stoneColor: number;
+  private stoneColor2: number;
 
   constructor() {
     super();
     this.sandColor = 0xcaa341;
     this.stoneColor = 0x777777;
+    this.stoneColor2 = 0xcaa341;
 
     this.roadWidth = 100;
 
@@ -54,6 +56,14 @@ export default class Stadium extends THREE.Group {
     };
 
     this.init();
+  }
+
+  public getRoadWidth() {
+    return this.roadWidth;
+  }
+
+  public getCenterCurve() {
+    return this.centerCurve;
   }
 
   public setGui(gui: any) {
@@ -175,17 +185,72 @@ export default class Stadium extends THREE.Group {
   }
 
   private initGates(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3) {
-    const gatesPoint = centerLineSpline.getPointAt(0);
+    const zeroPoint = centerLineSpline.getPointAt(0);
+    const gatesPoint = zeroPoint.clone();
+    gatesPoint.x += this.roadWidth * 0.5 + this.borderWidth + this.tribuneWidth - 8;
 
-    // create sphere
+    const h = this.tribuneHeight * 0.6;
+    const w = h * 1;
+    const t = 10;
+    const d = 20;
 
-    const geometry = new THREE.SphereGeometry( 5, 32, 32 );
-    const material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-    const sphere = new THREE.Mesh( geometry, material );
+    const gatesShapeInner = new THREE.Shape();
 
-    sphere.position.copy(gatesPoint);
+    gatesShapeInner.moveTo( -w * 0.5, 0 );
+    gatesShapeInner.lineTo( -w * 0.5, h - w * 0.5 );
+    gatesShapeInner.arc( w * 0.5, 0, w * 0.5, Math.PI, 0, true );
+    gatesShapeInner.lineTo( w * 0.5, 0 );
 
-    this.add( sphere );
+    gatesShapeInner.closePath();
+
+    const gatesShapeOuter = new THREE.Shape();
+
+    gatesShapeOuter.moveTo( -w * 0.5 - t, 0 );
+    gatesShapeOuter.lineTo( -w * 0.5 - t, h - w * 0.5 );
+    gatesShapeOuter.arc( w * 0.5 + t, 0, w * 0.5 + t, Math.PI, 0, true );
+    gatesShapeOuter.lineTo( w * 0.5 + t, 0 );
+
+    gatesShapeOuter.closePath();
+
+    const extrudeSettings = {
+      steps: 2,
+      depth: d + 2,
+    }
+
+    const geometryInner = new THREE.ExtrudeGeometry( gatesShapeInner, extrudeSettings );
+
+    const extrudeSettings2 = {
+      steps: 2,
+      depth: d,
+    }
+
+    const geometryOuter = new THREE.ExtrudeGeometry( gatesShapeOuter, extrudeSettings2 )
+
+    const evaluator = new Evaluator();
+    const gatesRes = evaluator.evaluate( new Brush(geometryOuter), new Brush(geometryInner), SUBTRACTION );
+
+    const material = new THREE.MeshLambertMaterial( { color: this.stoneColor2, wireframe: false } );
+    const gates = new THREE.Mesh(gatesRes.geometry, material);
+
+    gates.position.copy(gatesPoint);
+    gates.position.y -= 4;
+
+    gates.rotateY(Math.PI * 0.5);
+
+    this.add(gates);
+
+
+
+    // geometryInner.rotateY(Math.PI * 0.5);
+    // geometryInner.translate(gatesPoint.x, gatesPoint.y, gatesPoint.z);
+
+    // const tribunesRes = evaluator.evaluate( new Brush(tribunes.geometry), new Brush(geometryInner), SUBTRACTION );
+    // const newTribunes = new THREE.Mesh(tribunesRes.geometry, tribunes.material);
+
+    // this.remove(tribunes);
+
+    // this.add(newTribunes);
+
   }
 
   private createRoadBorder(centerLineSpline: THREE.CatmullRomCurve3) {
@@ -249,8 +314,8 @@ export default class Stadium extends THREE.Group {
   }
 
   private createTribunes(startCurve: THREE.CatmullRomCurve3) {
-    const w = this.mountWidth;
-    const h = this.mountHeight;
+    const w = this.tribuneWidth;
+    const h = this.tribuneHeight;
 
     const curve = ThreeHelper.getPerpendicularCurve(startCurve, w * 0.5 + this.roadWidth * 0.5 + this.borderWidth);
 
