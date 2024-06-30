@@ -23,7 +23,7 @@ export default class CameraController {
 
     this.offsetsConfig = {
       [POV.FIRST_PERSON]: new THREE.Vector3(0, 0, -this.player.length * 0.5 - 2),
-      [POV.THIRD_PERSON]: new THREE.Vector3(0, 1.44, 4.6),
+      [POV.THIRD_PERSON]: new THREE.Vector3(0, 1.44, 4.6).multiplyScalar(5),
     }
 
     document.addEventListener('keydown', (event) => {

@@ -15,7 +15,7 @@ export default class ThreeHelper {
     });
   }
 
-  static createAnim(name: string): THREE.AnimationClip {
+  static createAnimations(name: string): THREE.AnimationClip[] {
     const source: any = ALL_ASSETS.models[name];
 
     if (!source) {
@@ -24,13 +24,13 @@ export default class ThreeHelper {
 
     const anim = cloneGltf(source);
 
-    return anim.animations[0];
+    return anim.animations;
   }
 
   static createModelView(name: string) {
-    const gltf = ALL_ASSETS.models[name];
-    const view = cloneGltf(gltf).scene;
-    
+    // const view = ALL_ASSETS.models[name].scene.clone(true);
+    const view = cloneGltf(ALL_ASSETS.models[name]).scene;
+
     this.makeModelDoubleSide(view);
 
     return view;
@@ -116,5 +116,18 @@ export default class ThreeHelper {
     })
 
     return shape;
+  }
+
+  static getCurvePosition(curve: THREE.CatmullRomCurve3, t: number) {
+    const point = curve.getPoint(t);
+    return new THREE.Vector3(point.x, point.y, point.z);
+  }
+
+  static getCurveRotation(curve: THREE.CatmullRomCurve3, t: number) {
+    const tangent = curve.getTangent(t);
+    const axis = new THREE.Vector3(0, 1, 0);
+    const angle = Math.atan2(tangent.z, tangent.x);
+
+    return new THREE.Quaternion().setFromAxisAngle(axis, angle);
   }
 }

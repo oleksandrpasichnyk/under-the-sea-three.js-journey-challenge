@@ -1,6 +1,6 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TextureLoader } from 'three';
-import { FISHES, FISHES_2, PIRATES } from './models-list';
+import { FISHES, PIRATES } from './models-list';
 import { TEXTURES } from './textures-list';
 
 export const ALL_ASSETS: {
@@ -101,7 +101,7 @@ class Loader {
 // Usage
 const assets = {
   textures: [...TEXTURES],
-  models: [...FISHES, ...FISHES_2, ...PIRATES]
+  models: [...FISHES, ...PIRATES]
 };
 
 export const LOADER = new Loader(assets);

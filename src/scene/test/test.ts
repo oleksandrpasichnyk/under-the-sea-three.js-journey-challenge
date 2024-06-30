@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { FISHES, FISHES_2, PIRATES } from '../../loader/models-list';
+import { FISHES, PIRATES } from '../../loader/models-list';
 import TestObject from './test-object';
 
 export default class Test extends THREE.Group {
@@ -13,7 +13,7 @@ export default class Test extends THREE.Group {
     let prewX = 0;
     const offset = 2;
 
-    const list = PIRATES;
+    const list = FISHES;
 
     for (let i = 0; i < list.length; i++) {
       const fishName = list[i];

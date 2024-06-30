@@ -134,11 +134,11 @@ export default class Scene extends THREE.Scene{
     this.add(water);
     water.position.y = 50;
 
-    const test = this.test = new Test();
-    this.add(test);
-    test.position.y = 10;
+    // const test = this.test = new Test();
+    // this.add(test);
+    // test.position.y = 10;
 
-    const player = this.player = new Player('');
+    const player = this.player = new Player();
     this.add(player);
     // fish.setGUI(this.gui);
 
@@ -180,7 +180,7 @@ export default class Scene extends THREE.Scene{
   }
 
   private initPlayersController() {
-    this.playersController = new PlayersController(this.player, this.stadium);
+    this.playersController = new PlayersController(this, this.player, this.stadium);
   }
 
   private setupStats() {
@@ -264,14 +264,5 @@ export default class Scene extends THREE.Scene{
 
     this.renderer.render(this, this.camera);
     this.rendererStats?.update(this.renderer);
-  }
-
-  private createTraceHelper(position: THREE.Vector3) {
-    const sphere = new THREE.SphereGeometry(0.1);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const mesh = new THREE.Mesh(sphere, material);
-    this.add(mesh);
-
-    mesh.position.copy(position);
   }
 }

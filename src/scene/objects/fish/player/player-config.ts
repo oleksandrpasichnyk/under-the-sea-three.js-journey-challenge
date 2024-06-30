@@ -16,5 +16,5 @@ export const PLAYER_RACING_CONFIG: RacingConfig = {
 
 export const PLAYER_VIEW_CONFIG: ViewConfig = {
   modelName: 'models/fishes-2/Clownfish.glb',
-  scale: 0.2,
+  scale: 1,
 }

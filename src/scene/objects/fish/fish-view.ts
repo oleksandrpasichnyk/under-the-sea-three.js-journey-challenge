@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import ThreeHelper from '../../../helpers/three-hepler';
-import { ALL_ASSETS } from '../../../loader/loader';
 import { FISH_ANIMATION_TYPE, FishAnimationsController } from './fish-animations-controller';
-import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 import { RacingConfig, ViewConfig } from './fish.types';
 import { RacingController } from './racing-controller';
 
@@ -11,7 +9,7 @@ export default class Fish extends THREE.Group {
   private mixer?: FishAnimationsController;
   private animationFactor: number = 5;
   private boundingBox!: THREE.Vector3;
-  
+
   protected racingConfig: RacingConfig;
   protected viewConfig: ViewConfig;
 
@@ -46,34 +44,33 @@ export default class Fish extends THREE.Group {
   }
 
   private initView() {
-    const asset = ALL_ASSETS.models[this.viewConfig.modelName];
-    const view = this.view = asset.scene;
+    const view = this.view = ThreeHelper.createModelView(this.viewConfig.modelName);
+    const animations = ThreeHelper.createAnimations(this.viewConfig.modelName);
 
     const s = this.viewConfig.scale;
-    view.scale.set(s, s, s);
-    view.rotation.y = Math.PI;
 
-    if (asset.animations.length !== 0) {
-      const mixer = this.mixer = new FishAnimationsController(view, asset.animations);
+    view.rotation.y = Math.PI;
+    view.scale.set(s, s, s);
+
+    if (animations.length !== 0) {
+      const mixer = this.mixer = new FishAnimationsController(view, animations);
 
       mixer.playAnimation(FISH_ANIMATION_TYPE.SwimmingNormal);
     };
 
-    ThreeHelper.makeModelDoubleSide(view);
-
-    const material = new CustomShaderMaterial({
-      baseMaterial: THREE.MeshStandardMaterial,
-      silent: true,
+    // const material = new CustomShaderMaterial({
+    //   baseMaterial: THREE.MeshStandardMaterial,
+    //   silent: true,
   
-      metalness: 0,
-      roughness: 1,
-      color: 0x00ff00,
-      flatShading: true,
+    //   metalness: 0,
+    //   roughness: 1,
+    //   color: 0x00ff00,
+    //   flatShading: true,
 
-      // wireframe: true
-    })
+    //   // wireframe: true
+    // })
 
-    view.children[0].material = material;
+    // view.children[0].material = material;
 
     this.add(view);
   }

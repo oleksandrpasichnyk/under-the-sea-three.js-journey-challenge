@@ -37,7 +37,7 @@ export class RacingController {
 
     const prewPos = this.player.position.clone();
 
-    const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(this.player.quaternion);    
+    const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(this.player.quaternion.clone());    
     this.player.position.add(direction.clone().multiplyScalar(this.speed * dt));
 
     this.realSpeed = Math.round(this.player.position.distanceTo(prewPos) / dt);

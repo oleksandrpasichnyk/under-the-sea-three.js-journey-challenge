@@ -1,14 +1,4 @@
 const FISHES = [
-  "Dolphin.glb",
-  "Fish1.glb",
-  "Fish2.glb",
-  "Fish3.glb",
-  "Shark.glb",
-  "Whale.glb",
-
-];
-
-const FISHES_2 = [
   "Anglerfish.glb",
   "ArmoredCatfish.glb",
   "Betta.glb",
@@ -16,12 +6,12 @@ const FISHES_2 = [
   "Blobfish.glb",
   "BlueGoldfish.glb",
   "BlueTang.glb",
-  "Boat.glb",
+  // "Boat.glb",
   "ButterflyFish.glb",
   "CardinalFish.glb",
   "Clownfish.glb",
-  // "CoralGrouper.glb",
-  // "Cowfish.glb",
+  "CoralGrouper.glb",
+  "Cowfish.glb",
   // "Dock_Long.glb",
   // "Dock_Long_NoRope.glb",
   // "Dock_Stairs.glb",
@@ -31,36 +21,36 @@ const FISHES_2 = [
   // "FishingRod_Lvl3.glb",
   // "FishingRod_Lvl4.glb",
   // "FishingRod_Lvl5.glb",
-  // "Flatfish.glb",
-  // "FlowerHorn.glb",
-  // "GoblinShark.glb",
-  // "Goldfish.glb",
-  // "Humphead.glb",
-  // "Koi.glb",
-  // "Lionfish.glb",
+  "Flatfish.glb",
+  "FlowerHorn.glb",
+  "GoblinShark.glb",
+  "Goldfish.glb",
+  "Humphead.glb",
+  "Koi.glb",
+  "Lionfish.glb",
   // "Lure_1.glb",
   // "Lure_2.glb",
   // "Lure_3.glb",
   // "Lure_4.glb",
   // "Lure_5.glb",
   // "Lure_6.glb",
-  // "MandarinFish.glb",
-  // "MoorishIdol.glb",
-  // "ParrotFish.glb",
-  // "Piranha.glb",
-  // "Puffer.glb",
-  // "RedSnapper.glb",
-  // "RoyalGramma.glb",
-  // "Shark.glb",
-  // "Sunfish.glb",
-  // "Swordfish.glb",
-  // "Tang.glb",
-  // "Tetra.glb",
-  // "Tuna.glb",
-  // "Turbot.glb",
+  "MandarinFish.glb",
+  "MoorishIdol.glb",
+  "ParrotFish.glb",
+  "Piranha.glb",
+  "Puffer.glb",
+  "RedSnapper.glb",
+  "RoyalGramma.glb",
+  "Shark.glb",
+  "Sunfish.glb",
+  "Swordfish.glb",
+  "Tang.glb",
+  "Tetra.glb",
+  "Tuna.glb",
+  "Turbot.glb",
   // "Worm.glb",
-  // "YellowTang.glb",
-  // "ZebraClownFish.glb"
+  "YellowTang.glb",
+  "ZebraClownFish.glb"
 ];
 
 
@@ -146,12 +136,10 @@ const addPrefix = (models: string[], prefix: string) => {
   models.forEach((model, index) => models[index] = `${prefix}/${model}`);
 }
 
-const FISHES_PREFIX = 'models/fishes';
-const FISHES_2_PREFIX = 'models/fishes-2';
+const FISHES_PREFIX = 'models/fishes-2';
 const PIRATES_PREFIX = 'models/pirates';
 
 addPrefix(FISHES, FISHES_PREFIX);
-addPrefix(FISHES_2, FISHES_2_PREFIX);
 addPrefix(PIRATES, PIRATES_PREFIX);
 
-export { FISHES, FISHES_2, PIRATES };
+export { FISHES, PIRATES };
