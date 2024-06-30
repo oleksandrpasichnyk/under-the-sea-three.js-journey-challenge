@@ -66,7 +66,7 @@ export default class CameraController {
       // }
     }
 
-      const desiredPosition = new THREE.Vector3().copy(this.player.position);
+      const desiredPosition = new THREE.Vector3().copy(this.player.position.clone());
       const offsetRotated = this.getOffset().clone().applyQuaternion(this.player.quaternion);
       desiredPosition.add(offsetRotated);
       
@@ -76,11 +76,11 @@ export default class CameraController {
   }
 
   getLookAtTarget() {
-    const desiredPosition = new THREE.Vector3().copy(this.player.position);
+    const desiredPosition = new THREE.Vector3().copy(this.player.position.clone());
     const offsetRotated = new THREE.Vector3(0, 0, -this.player.length * 0.5 - 4).applyQuaternion(this.player.quaternion);
     desiredPosition.add(offsetRotated);
 
-    return this.pov === POV.THIRD_PERSON ? this.player.position : desiredPosition;
+    return this.pov === POV.THIRD_PERSON ? this.player.position.clone() : desiredPosition;
   }
 
   getLerp() {

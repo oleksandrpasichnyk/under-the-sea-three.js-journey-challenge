@@ -7,11 +7,8 @@ export interface RacingConfig {
 export interface PlayerRacingConfig {
   maxSpeed: number,
   acceleration: number,
-  maxTurboSpeed: number,
-  turboAcceleration: number,
   deceleration: number,
   breakSpeed: number,
-  handBreakSpeed: number,
   rotationBreakSpeed: number,
   rotationAcceleration: number,
   rotationDeceleration: number,

@@ -1,17 +1,14 @@
 import { PlayerRacingConfig, ViewConfig } from "../fish.types";
 
 export const PLAYER_RACING_CONFIG: PlayerRacingConfig = {
-  maxSpeed: 50,
-  maxTurboSpeed: 100,
-  acceleration: 4,
-  turboAcceleration: 50,
-  deceleration: 3,
-  breakSpeed: 10, // to speed
-  handBreakSpeed: 15, // to speed
-  rotationBreakSpeed: 6, // to speed
-  rotationAcceleration: 2,
-  rotationDeceleration: 3,
-  maxRotationSpeed: 3.5,
+  maxSpeed: 70,
+  acceleration: 10,
+  deceleration: 8,
+  breakSpeed: 50, // to speed
+  rotationBreakSpeed: 10, // to speed
+  rotationAcceleration: 5,
+  rotationDeceleration: 5,
+  maxRotationSpeed: 7,
 };
 
 export const PLAYER_VIEW_CONFIG: ViewConfig = {
