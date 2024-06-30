@@ -10,9 +10,10 @@ import { SIZES } from '../config';
 import RendererStats from '@xailabs/three-renderer-stats';
 import { LOADER } from '../loader/loader';
 import Test from './test/test';
-import Fish from './objects/fish/fish-view';
 import CameraController from './controllers/camera-controller';
 import UnderwaterBubbles from './vfx/bubbles-effect';
+import PlayersController from './controllers/players-controller';
+import { Player } from './objects/fish/player/player';
 
 const CANVAS_ID = 'scene';
 
@@ -34,11 +35,12 @@ export default class Scene extends THREE.Scene{
   private stadium!: Stadium;
   private bg!: Background;
   private test!: Test;
-  private fish!: Fish;
+  private player!: Player;
 
   private cameraMode: CAMERA_MODES;
 
   private cameraController!: CameraController;
+  private playersController!: PlayersController;
 
   private rendererStats!: RendererStats;
 
@@ -70,6 +72,7 @@ export default class Scene extends THREE.Scene{
     console.time('init scene')
     this.setupObjects();
     this.initCameraController();
+    this.initPlayersController();
     this.setupGUI();
 
     this.initRendererStats();
@@ -135,9 +138,9 @@ export default class Scene extends THREE.Scene{
     this.add(test);
     test.position.y = 10;
 
-    const fish = this.fish = new Fish('');
-    this.add(fish);
-    fish.setGUI(this.gui);
+    const player = this.player = new Player('');
+    this.add(player);
+    // fish.setGUI(this.gui);
 
     setTimeout(() => {
       const underwaterBubbles = this.underwaterBubbles = new UnderwaterBubbles();
@@ -172,8 +175,12 @@ export default class Scene extends THREE.Scene{
   }
 
   private initCameraController() {
-    this.cameraController = new CameraController(this.camera, this.fish);
+    this.cameraController = new CameraController(this.camera, this.player);
     this.cameraController.setGUI(this.gui);
+  }
+
+  private initPlayersController() {
+    this.playersController = new PlayersController(this.player, this.stadium);
   }
 
   private setupStats() {
@@ -238,7 +245,6 @@ export default class Scene extends THREE.Scene{
     this.stats?.update();
     this.water?.update(dt);
     this.test?.update(dt);
-    this.fish?.update(dt);
 
     this.underwaterBubbles?.update(dt);
     
@@ -254,14 +260,10 @@ export default class Scene extends THREE.Scene{
       this.cameraController?.update(dt);
     }
 
+    this.playersController?.update(dt);
+
     this.renderer.render(this, this.camera);
-
     this.rendererStats?.update(this.renderer);
-
-    if(this.fish && this.fish.position.distanceTo(this.prewPos) > 0.1){
-      // this.createTraceHelper(this.fish.position);
-      // this.prewPos = this.fish.position.clone();
-    }
   }
 
   private createTraceHelper(position: THREE.Vector3) {

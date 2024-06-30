@@ -26,6 +26,8 @@ export default class Stadium extends THREE.Group {
   private stoneColor: number;
   private stoneColor2: number;
 
+  private centerCurve!: THREE.CatmullRomCurve3;
+
   constructor() {
     super();
     this.sandColor = 0xcaa341;
@@ -169,7 +171,7 @@ export default class Stadium extends THREE.Group {
     const centerLinePoints = [...curvePoints]
     centerLinePoints.pop();
     const roadSpline = new THREE.CatmullRomCurve3( curvePoints );
-    const centerLineSpline = new THREE.CatmullRomCurve3( centerLinePoints );
+    const centerLineSpline = this.centerCurve = new THREE.CatmullRomCurve3( centerLinePoints );
 
     roadSpline.curveType = "catmullrom";
     centerLineSpline.curveType = "catmullrom";

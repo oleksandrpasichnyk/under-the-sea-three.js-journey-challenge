@@ -7,13 +7,15 @@ export default class PlayersController {
   private botsCount: number = 5;
 
   private player: Fish;
-  private bots!: Bot[];
+  private bots: Bot[] = [];
   private stadium: Stadium;
   private botsRaceCurves!: THREE.CatmullRomCurve3;
 
   constructor(player: Fish, stadium: Stadium) {
     this.player = player;
     this.stadium = stadium;
+
+    this.setupRace();
   }
 
   private setupRace() {
@@ -22,24 +24,25 @@ export default class PlayersController {
     const roadWidth = this.stadium.getRoadWidth();
     const centerCurve = this.stadium.getCenterCurve();
 
-    const totalPlayersCount = this.bots.length + 1;
+    const totalPlayersCount = this.botsCount + 1;
     const playerPositionIndex = Math.floor(Math.random() * totalPlayersCount);
+    
+    const step = (roadWidth / (totalPlayersCount + 1));
 
-    const roadBorderOffset = 5;
-    const raceZoneWidth = roadWidth - roadBorderOffset * 2;
-
-    this.bots.forEach((bot, i) => {
+    for (let i = 0; i < totalPlayersCount; i++) {
       const raceIndex = i; //  === playerPositionIndex ? 
 
-      const offset = -roadWidth * 0.5 + roadBorderOffset + (raceZoneWidth / totalPlayersCount) * raceIndex;
+      const offset = -roadWidth * 0.5 + step * (raceIndex + 1);
       const raceCurve = ThreeHelper.getPerpendicularCurve(centerCurve, offset);
       const helper = ThreeHelper.createCurveHelper(raceCurve);
-      this.stadium.add(helper)
+      this.stadium.add(helper);
 
-    })
+      helper.position.y = 3;
+    }
   }
 
   public update(dt: number) {
+    this.player.update(dt);
     // bots set positions
 
     // bots update
