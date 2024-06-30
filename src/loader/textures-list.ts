@@ -9,6 +9,7 @@ const TEXTURES = [
   'bg/bottomblue.png',
   'bg/backblue.png',
   'bg/middleblue.png',
+  'finish.png',
 ];
 
 export { TEXTURES };

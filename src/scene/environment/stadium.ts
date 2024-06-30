@@ -8,6 +8,7 @@ import ThreeHelper from '../../helpers/three-hepler';
 
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 import Fence from './fence';
+import { ALL_ASSETS } from '../../loader/loader';
 
 export default class Stadium extends THREE.Group {
   private roadWidth: number;
@@ -184,6 +185,28 @@ export default class Stadium extends THREE.Group {
     this.createRoadBorder(centerLineSpline);
 
     this.initGates(tribunes, centerLineSpline);
+    this.initFinishLine(centerLineSpline);
+  }
+
+  private initFinishLine(centerLineSpline: THREE.CatmullRomCurve3) {
+    const zeroPoint = centerLineSpline.getPointAt(0);
+    const finishLinePoint = zeroPoint.clone();
+
+    console.log(ALL_ASSETS.textures)
+
+    const texture = ALL_ASSETS.textures['finish.png'];
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(2, 1);
+
+    const material = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide } );
+    const geometry = new THREE.PlaneGeometry( this.roadWidth, 10 );
+    const finishLine = new THREE.Mesh( geometry, material );
+
+    finishLine.position.copy(finishLinePoint);
+    finishLine.position.y += 10;
+    finishLine.rotateX(Math.PI * 0.5);
+
+    this.add(finishLine);
   }
 
   private initGates(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3) {
