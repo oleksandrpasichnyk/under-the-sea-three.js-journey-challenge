@@ -20,6 +20,8 @@ export default class PlayersController {
   private raycaster: THREE.Raycaster;
   private raycaster2: THREE.Raycaster;
 
+  private isPlaying: boolean = false;
+
   constructor(scene: Scene, player: Player, stadium: Stadium) {
     this.player = player;
     this.stadium = stadium;
@@ -34,6 +36,10 @@ export default class PlayersController {
 
     this.arrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(), 10, 0xff0000);
     this.scene.add(this.arrowHelper);
+  }
+
+  public start() {
+    this.isPlaying = true;
   }
 
   private initBots() {
@@ -97,6 +103,17 @@ export default class PlayersController {
   }
 
   public update(dt: number) {
+    if(!this.isPlaying) {
+
+      this.player.updateAnimation(dt);
+
+      this.bots.forEach(bot => {
+        bot.updateAnimation(dt);
+      });
+
+      return;
+    }
+
     this.player.update(dt);
 
     this.bots.forEach(bot => {

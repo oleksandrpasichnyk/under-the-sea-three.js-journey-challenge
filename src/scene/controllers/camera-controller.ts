@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import gsap from 'gsap';
 import Fish from '../objects/fish/fish-view';
 
 const enum POV {
@@ -10,6 +11,8 @@ export default class CameraController {
   private camera: THREE.PerspectiveCamera;
   private player: Fish;
   private offset: THREE.Vector3;
+
+  private isIntroShown: boolean = false;
 
   constructor(camera: THREE.PerspectiveCamera, player: Fish) {
     this.camera = camera;
@@ -24,25 +27,37 @@ export default class CameraController {
     // });
   }
 
-  setGUI(gui: any) {
-    // const folderCamera = gui.addFolder('Camera');
-    // folderCamera.add(this.offsetsConfig[POV.THIRD_PERSON], 'x', 0, 10).name('x');
-    // folderCamera.add(this.offsetsConfig[POV.THIRD_PERSON], 'y', 0, 10).name('y');
-    // folderCamera.add(this.offsetsConfig[POV.THIRD_PERSON], 'z', 0, 10).name('z');
+  startInto(duration: number) {
+    const startPosition = new THREE.Vector3().copy(this.player.position.clone()).add(new THREE.Vector3(25, 2, -12));
+    const endPosition = new THREE.Vector3().copy(this.player.position.clone()).add(new THREE.Vector3(-10, 2, -12));
 
-    // // folderCamera.add(this, 'pov', [POV.FIRST_PERSON, POV.THIRD_PERSON]).name('POV')
+    this.camera.position.copy(startPosition);
+    this.camera.lookAt(new THREE.Vector3(this.player.position.x + 10, 0, 0));
 
-    // folderCamera.open();
+    gsap.to(this.camera.position, {
+      delay: 0.3,
+      x: endPosition.x,
+      y: endPosition.y,
+      z: endPosition.z,
+      duration,
+      onComplete: () => {
+        this.isIntroShown = true;
+      }
+    });
   }
 
   update(dt: number) {
-      const desiredPosition = new THREE.Vector3().copy(this.player.position.clone());
-      const offsetRotated = this.offset.clone().applyQuaternion(this.player.quaternion.clone());
-      desiredPosition.add(offsetRotated);
-      
-      this.camera.position.lerp(desiredPosition, this.getLerp());
+    if (!this.isIntroShown) {
+      return
+    }
 
-      this.camera.lookAt(this.getLookAtTarget());
+    const desiredPosition = new THREE.Vector3().copy(this.player.position.clone());
+    const offsetRotated = this.offset.clone().applyQuaternion(this.player.quaternion.clone());
+    desiredPosition.add(offsetRotated);
+
+    this.camera.position.lerp(desiredPosition, this.getLerp());
+
+    this.camera.lookAt(this.getLookAtTarget());
   }
 
   getLookAtTarget() {

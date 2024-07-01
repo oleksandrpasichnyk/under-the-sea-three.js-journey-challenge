@@ -58,6 +58,14 @@ export class FishAnimationsController {
     this.updateAnimation();
   }
 
+  public setOffsetTime(offsetTime: number): void {
+    // this.currentAnimation.time = offsetTime;
+
+    const action: THREE.AnimationAction = this.getActionByKey(this.currentAnimation);
+    action.time = offsetTime;
+
+  }
+
   public playAnimation(animation: FISH_ANIMATION_TYPE, loop: boolean = true): void {
     this.currentAnimation = animation;
 

@@ -78,6 +78,29 @@ export default class Scene extends THREE.Scene{
     this.initRendererStats();
 
     console.timeEnd('init scene')
+
+    const duration = 4;
+    this.cameraController.startInto(duration);
+    setTimeout(() => {
+      this.startGame()
+    }, duration * 1000);
+  }
+
+  private startGame() {
+    const countdown = 3;
+    let count = countdown;
+
+    const interval = setInterval(() => {
+      
+      if (count === 0) {
+        clearInterval(interval);
+        this.playersController.start();
+      }
+      
+      console.log(count);
+      count--;
+    }, 1000);
+
   }
 
   private initRendererStats() {
@@ -176,7 +199,6 @@ export default class Scene extends THREE.Scene{
 
   private initCameraController() {
     this.cameraController = new CameraController(this.camera, this.player);
-    this.cameraController.setGUI(this.gui);
   }
 
   private initPlayersController() {
