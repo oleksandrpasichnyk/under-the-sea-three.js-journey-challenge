@@ -93,8 +93,8 @@ export default class Scene extends THREE.Scene{
     this.canvas = document.querySelector(`canvas#${CANVAS_ID}`)!;
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // this.renderer.shadowMap.enabled = true;
+    // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   }
 
   private async setupLoadingManager() {
@@ -132,7 +132,7 @@ export default class Scene extends THREE.Scene{
     const water = this.water = new TopWater();
     water.setGui(this.gui);
     this.add(water);
-    water.position.y = 50;
+    water.position.y = 80;
 
     // const test = this.test = new Test();
     // this.add(test);

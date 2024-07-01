@@ -65,9 +65,9 @@ export default class PlayersController {
       
 
 
-      const helper = ThreeHelper.createCurveHelper(newRaceCurve);
-      this.stadium.add(helper);
-      helper.position.y = 3;
+      // const helper = ThreeHelper.createCurveHelper(newRaceCurve);
+      // this.stadium.add(helper);
+      // helper.position.y = 3;
 
       this.bots[botIndex].setRaceCurve(newRaceCurve);
       this.setStartPos(this.bots[botIndex], newRaceCurve);

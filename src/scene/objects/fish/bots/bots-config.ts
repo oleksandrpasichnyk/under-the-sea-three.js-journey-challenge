@@ -3,28 +3,28 @@ import { BOT_TYPE } from "../fish.types"
 
 export const BOTS_RACING_CONFIG = {
   [BOT_TYPE.ONE]: {
-    maxSpeed: 40,
-    acceleration: 7,
+    maxSpeed: 1.6,
+    acceleration: 0.2,
     lerp: 0.1,
   },
   [BOT_TYPE.TWO]: {
-    maxSpeed: 45,
-    acceleration: 8,
+    maxSpeed: 1.6,
+    acceleration: 0.25,
     lerp: 0.03,
   },
   [BOT_TYPE.THREE]: {
-    maxSpeed: 43,
-    acceleration: 8,
+    maxSpeed: 1.7,
+    acceleration: 0.28,
     lerp: 0.05,
   },
   [BOT_TYPE.FOUR]: {
-    maxSpeed: 42,
-    acceleration: 7.5,
+    maxSpeed: 1.5,
+    acceleration: 0.25,
     lerp: 0.04,
   },
   [BOT_TYPE.FIVE]: {
-    maxSpeed: 40,
-    acceleration: 8,
+    maxSpeed: 1.4,
+    acceleration: 0.35,
     lerp: 0.07,
   },
 }

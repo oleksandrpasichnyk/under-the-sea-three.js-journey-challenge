@@ -33,7 +33,7 @@ export class InputController {
     return this._rotationSpeed;
   }
 
-  public checkControls(dt: number) {
+  public checkControls(dt: number) {    
     const { maxSpeed, acceleration, deceleration, maxRotationSpeed, rotationAcceleration,
       rotationDeceleration, breakSpeed, rotationBreakSpeed } = this.config;
 

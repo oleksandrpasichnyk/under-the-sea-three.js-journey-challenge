@@ -30,13 +30,13 @@ canvas {
   width: 100%;
   outline: none;
 
-  background: rgb(34, 193, 195);
+  background: rgb(32, 146, 177);
   background: linear-gradient(
-    0deg,
-    rgb(8, 163, 166) 0%,
-    rgba(79, 166, 167, 0.849) 8%,
-    rgba(61, 79, 94, 0.885) 40%,
-    rgb(17, 19, 23)
+    180deg, /* Changed from 0deg to 180deg */
+    rgb(12, 165, 196) 0%,
+    rgba(55, 175, 177, 0.849) 30%,
+    rgba(44, 90, 128, 0.885) 80%,
+    rgb(46, 64, 99)
   );
 }
 

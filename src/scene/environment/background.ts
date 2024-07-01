@@ -36,6 +36,6 @@ export default class Background extends THREE.Group {
     const material = new THREE.MeshBasicMaterial({ envMap: texture, envMapRotation: new THREE.Euler(Math.PI, 0, 0), side: THREE.BackSide });
     const mesh = new THREE.Mesh(geometry, material);
 
-    this.add(mesh);
+    // this.add(mesh);
   }
 }

@@ -5,6 +5,7 @@ import { ALL_ASSETS } from '../../loader/loader';
 
 export default class TopWater extends THREE.Group {
   private water!: Water;
+  private water2!: Water;
 
   constructor() {
     super();
@@ -35,22 +36,28 @@ export default class TopWater extends THREE.Group {
         textureWidth: 512,
         textureHeight: 512,
         waterNormals: texture,
-        sunDirection: new THREE.Vector3(),
+        sunDirection: new THREE.Vector3(0, -1, 0),
         sunColor: 0xffffff,
         waterColor: 0x0061ff,
-        distortionScale: 30,
-        fog: true,
-        eye: new THREE.Vector3(0, 0, 0),
+        distortionScale: 5,
+        // fog: true,
+        eye: new THREE.Vector3(0, -1, 0),
       }
     );
 
-    water.material.uniforms.size.value = 0.5;
+    water.material.uniforms.size.value = 0.4;
+
+    water.material.transparent = true;
+    water.material.opacity = 0.5;
+    water.material.uniforms.alpha.value = 0.5;
+
     water.rotation.x = - Math.PI * 1.5;
 
     this.add( water );
   }
 
   public update(dt: number) {
-    this.water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+    this.water.material.uniforms[ 'time' ].value += dt;
+    // this.water2.material.uniforms[ 'time' ].value += 1.0 / 60.0;
   }
 }

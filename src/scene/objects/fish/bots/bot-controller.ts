@@ -34,9 +34,10 @@ export class BotController {
       return;
     }
  
-    this._speed = Math.min(this._speed + this.racingConfig.acceleration * dt, this.racingConfig.maxSpeed);
+    const randomFactor = Math.random() * 0.4 + 0.6;
+    this._speed = Math.min(this._speed + this.racingConfig.acceleration * randomFactor * dt, this.racingConfig.maxSpeed);
     
-    this.prewPos += this._speed * dt;
+    this.prewPos += this._speed;
     
     const t = this.prewPos / this.racingCurve.getLength();
 

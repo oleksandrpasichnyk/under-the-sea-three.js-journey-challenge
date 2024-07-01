@@ -7,7 +7,7 @@ import { RacingController } from './racing-controller';
 export default class Fish extends THREE.Group {
   private view!: THREE.Object3D;
   private mixer?: FishAnimationsController;
-  private animationFactor: number = 5;
+  private animationFactor: number = 0.125;
   private boundingBox!: THREE.Vector3;
 
   protected racingConfig: RacingConfig | PlayerRacingConfig;

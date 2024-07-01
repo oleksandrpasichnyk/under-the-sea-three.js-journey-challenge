@@ -32,14 +32,14 @@ export class RacingController {
 
   public update(dt: number) {
     if (this.rotationSpeed !== 0) {
-      this.player.rotation.y += this.rotationSpeed * dt;
+      this.player.rotation.y += this.rotationSpeed;
     }
 
     const prewPos = this.player.position.clone();
 
     const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(this.player.quaternion.clone());    
-    this.player.position.add(direction.clone().multiplyScalar(this.speed * dt));
+    this.player.position.add(direction.clone().multiplyScalar(this.speed));
 
-    this.realSpeed = Math.round(this.player.position.distanceTo(prewPos) / dt);
+    this.realSpeed = Math.round(this.player.position.distanceTo(prewPos) * 100);
   }
 }
