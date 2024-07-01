@@ -60,7 +60,7 @@ class Loader {
     await Promise.all(texturePromises);
     this.checkAllLoaded();
 
-    console.log(ALL_ASSETS.textures)
+    // console.log(ALL_ASSETS.textures)
   }
 
   private async loadModels() {
