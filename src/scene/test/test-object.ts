@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { ALL_ASSETS } from '../../loader/loader';
-import { FISH_ANIMATION_TYPE, FishAnimationsController } from '../objects/fish/fish-animations-controller';
+import { FishAnimationsController } from '../objects/fish/fish-animations-controller';
 
 export default class TestObject extends THREE.Group {
   private view!: THREE.Object3D;

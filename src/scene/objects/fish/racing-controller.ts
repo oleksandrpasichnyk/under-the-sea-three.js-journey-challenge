@@ -1,18 +1,15 @@
 import * as THREE from 'three';
 
 import Fish from "./fish-view";
-import { PlayerRacingConfig, RacingConfig } from "./fish.types";
 
 export class RacingController {
   private fish: Fish;
-  private racingConfig: RacingConfig | PlayerRacingConfig;
 
   protected speed: number = 0;
   protected rotationSpeed: number = 0;
 
-  constructor(player: Fish, racingConfig: RacingConfig | PlayerRacingConfig) {
+  constructor(player: Fish) {
     this.fish = player;
-    this.racingConfig = racingConfig;
 
   }
 
@@ -24,7 +21,7 @@ export class RacingController {
     this.rotationSpeed = rotationSpeed;
   }
 
-  public update(dt: number) {
+  public update() {
     if (this.rotationSpeed !== 0) {
       this.fish.rotation.y += this.rotationSpeed;
     }

@@ -1,7 +1,7 @@
 import gsap from "gsap";
 import { Container, Text } from "pixi.js";
 
-export class UI extends Container {
+export default class UI extends Container {
   private countdown!: Text;
   private speedMeter!: Text;
 

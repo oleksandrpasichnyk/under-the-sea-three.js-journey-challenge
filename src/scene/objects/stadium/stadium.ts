@@ -1,16 +1,15 @@
 import * as THREE from 'three';
-import EnvDetails from '../../environment/details';
 
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
+// @ts-ignore: Suppress TypeScript error for this GLSL import
 import groundVertexShader from '../../../shaders/ground/vertex.glsl'
+// @ts-ignore: Suppress TypeScript error for this GLSL import
 import groundFragmentShader from '../../../shaders/ground/fragment.glsl'
 import ThreeHelper from '../../../helpers/three-hepler';
 
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 import Fence from './fence';
-import { ALL_ASSETS } from '../../../loader/loader';
 import { Gates } from './gates';
-import { TribuneSits } from './tribune-sits';
 import Finish from './finish';
 
 export default class Stadium extends THREE.Group {
@@ -21,14 +20,12 @@ export default class Stadium extends THREE.Group {
 
   private borderWidth: number = 40;
 
-  private details!: EnvDetails;
   private mountainsUniforms: any;
   private mountainsUniforms2: any;
   private roadUniforms: any;
 
   private sandColor: number;
   private stoneColor: number;
-  private stoneColor2: number;
 
   private centerCurve!: THREE.CatmullRomCurve3;
 
@@ -39,13 +36,8 @@ export default class Stadium extends THREE.Group {
     super();
     this.sandColor = 0xcaa341;
     this.stoneColor = 0x777777;
-    this.stoneColor2 = 0xcaa341;
 
     this.roadWidth = 50;
-
-
-    this.details = new EnvDetails();
-    this.add(this.details);
 
     this.mountainsUniforms = {
       uPositionFrequency: new THREE.Uniform(0.2),
@@ -82,14 +74,14 @@ export default class Stadium extends THREE.Group {
     return this.centerCurve;
   }
 
-  public setGui(gui: any) {
-    // const folderGround = gui.addFolder('Ground');
+  // public setGui(gui: any) {
+  //   // const folderGround = gui.addFolder('Ground');
 
-    // folderGround.add(this.mountainsUniforms.uPositionFrequency, 'value', 0, 10, 0.1).name('uPositionFrequency')
-    // folderGround.add(this.mountainsUniforms.uStrength, 'value', 0, 100, 0.1).name('uStrength')
-    // folderGround.add(this.mountainsUniforms.uWarpFrequency, 'value', 0, 100, 0.1).name('uWarpFrequency')
-    // folderGround.add(this.mountainsUniforms.uWarpStrength, 'value', 0, 100, 0.1).name('uWarpStrength')
-  }
+  //   // folderGround.add(this.mountainsUniforms.uPositionFrequency, 'value', 0, 10, 0.1).name('uPositionFrequency')
+  //   // folderGround.add(this.mountainsUniforms.uStrength, 'value', 0, 100, 0.1).name('uStrength')
+  //   // folderGround.add(this.mountainsUniforms.uWarpFrequency, 'value', 0, 100, 0.1).name('uWarpFrequency')
+  //   // folderGround.add(this.mountainsUniforms.uWarpStrength, 'value', 0, 100, 0.1).name('uWarpStrength')
+  // }
 
   private createRoadCurve() {
     const curvePoints = [];
@@ -155,30 +147,30 @@ export default class Stadium extends THREE.Group {
     this.add( road );
   }
 
-  private createRoadCenterLine(curve: THREE.CatmullRomCurve3) {
-    const extrudeSettings = {
-      steps: 300,
-      bevelEnabled: false,
-      extrudePath: curve,
-    };
+  // private createRoadCenterLine(curve: THREE.CatmullRomCurve3) {
+  //   const extrudeSettings = {
+  //     steps: 300,
+  //     bevelEnabled: false,
+  //     extrudePath: curve,
+  //   };
 
-    const w = 1;
-    const h = 0.1;
+  //   const w = 1;
+  //   const h = 0.1;
 
-    const circleShape = new THREE.Shape();
+  //   const circleShape = new THREE.Shape();
 
-    circleShape.moveTo( -h * 0.5, w * 0.5 );
-    circleShape.lineTo( h * 0.5, w * 0.5 );
-    circleShape.lineTo( h * 0.5, -w * 0.5 );
-    circleShape.lineTo( -h * 0.5, -w * 0.5 );
+  //   circleShape.moveTo( -h * 0.5, w * 0.5 );
+  //   circleShape.lineTo( h * 0.5, w * 0.5 );
+  //   circleShape.lineTo( h * 0.5, -w * 0.5 );
+  //   circleShape.lineTo( -h * 0.5, -w * 0.5 );
 
-    const geometry = new THREE.ExtrudeGeometry( circleShape, extrudeSettings );
-    geometry.translate(0, -h * 0.5 + 0.001, 0);
-    const material = new THREE.MeshLambertMaterial( { color: 0x000000, wireframe: false } );
-    const mesh = new THREE.Mesh( geometry, material );
+  //   const geometry = new THREE.ExtrudeGeometry( circleShape, extrudeSettings );
+  //   geometry.translate(0, -h * 0.5 + 0.001, 0);
+  //   const material = new THREE.MeshLambertMaterial( { color: 0x000000, wireframe: false } );
+  //   const mesh = new THREE.Mesh( geometry, material );
 
-    this.add( mesh );
-  }
+  //   this.add( mesh );
+  // }
 
   private init() {
     const curvePoints = this.createRoadCurve();
@@ -190,14 +182,14 @@ export default class Stadium extends THREE.Group {
     roadSpline.curveType = "catmullrom";
     centerLineSpline.curveType = "catmullrom";
     
-    const tribunes = this.createTribunes(roadSpline);
+    this.createTribunes(roadSpline);
     this.createCenter(roadSpline);
     this.createFence(centerLineSpline);
     
     this.createRoad(roadSpline);
     this.createRoadBorder(centerLineSpline);
 
-    this.initGates(tribunes, centerLineSpline);
+    this.initGates(centerLineSpline);
     this.initFinishLine(centerLineSpline);
     this.initCollisionBorders(centerLineSpline);
     // this.initTribuneSits(tribunes, centerLineSpline, this.tribuneHeight * 0.2);
@@ -255,11 +247,11 @@ export default class Stadium extends THREE.Group {
     meshRight.visible = false;
   }
 
-  private initTribuneSits(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3, y: number) {
-    const curve = ThreeHelper.getPerpendicularCurve(centerLineSpline, this.roadWidth * 0.5 + this.borderWidth * 0.5);
-    const tribuneSits = new TribuneSits(curve, tribunes, y);
-    this.add(tribuneSits);
-  }
+  // private initTribuneSits(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3, y: number) {
+  //   const curve = ThreeHelper.getPerpendicularCurve(centerLineSpline, this.roadWidth * 0.5 + this.borderWidth * 0.5);
+  //   const tribuneSits = new TribuneSits(curve, tribunes, y);
+  //   this.add(tribuneSits);
+  // }
 
   private initFinishLine(centerLineSpline: THREE.CatmullRomCurve3) {
     const zeroPoint = centerLineSpline.getPointAt(0);
@@ -270,7 +262,7 @@ export default class Stadium extends THREE.Group {
     this.add(finish);
   }
 
-  private initGates(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3) {
+  private initGates(centerLineSpline: THREE.CatmullRomCurve3) {
     const zeroPoint = centerLineSpline.getPointAt(0);
     const gatesPoint = zeroPoint.clone();
     gatesPoint.x += this.roadWidth * 0.5 + this.borderWidth + this.tribuneWidth - 8;

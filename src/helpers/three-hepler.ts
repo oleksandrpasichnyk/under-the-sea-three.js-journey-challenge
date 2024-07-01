@@ -26,7 +26,7 @@ export default class ThreeHelper {
   static createModelView(name: string) {
     // const view = ALL_ASSETS.models[name].scene.clone(true);
 
-    const view = cloneGltf(ALL_ASSETS.models[name]).scene;
+    const view = (cloneGltf(ALL_ASSETS.models[name]) as any).scene as THREE.Object3D;
     this.makeModelDoubleSide(view);
 
     return view;

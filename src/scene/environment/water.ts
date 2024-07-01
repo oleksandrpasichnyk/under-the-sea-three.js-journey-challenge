@@ -5,7 +5,7 @@ import { ALL_ASSETS } from '../../loader/loader';
 
 export default class TopWater extends THREE.Group {
   private water!: Water;
-  private water2!: Water;
+  // private water2!: Water;
 
   constructor() {
     super();

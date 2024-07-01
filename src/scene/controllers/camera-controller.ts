@@ -2,11 +2,6 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import Fish from '../objects/fish/fish-view';
 
-const enum POV {
-  // FIRST_PERSON = 'First person',
-  THIRD_PERSON = 'Third person',
-}
-
 export default class CameraController {
   private camera: THREE.PerspectiveCamera;
   private player: Fish;
@@ -46,7 +41,7 @@ export default class CameraController {
     });
   }
 
-  update(dt: number) {
+  update() {
     if (!this.isIntroShown) {
       return
     }

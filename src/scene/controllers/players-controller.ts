@@ -4,7 +4,7 @@ import Stadium from '../objects/stadium/stadium';
 import ThreeHelper from '../../helpers/three-hepler';
 import { Bot } from '../objects/fish/bots/bot';
 import { BOT_TYPE } from '../objects/fish/fish.types';
-import Scene from '../scene';
+import { GameScene } from '../scene';
 import { Player } from '../objects/fish/player/player';
 
 export default class PlayersController {
@@ -14,7 +14,7 @@ export default class PlayersController {
   private bots: Bot[] = [];
   private stadium: Stadium;
 
-  private scene: Scene;
+  private scene: GameScene;
 
   private arrowHelper?: THREE.ArrowHelper;
   private raycaster: THREE.Raycaster;
@@ -22,7 +22,7 @@ export default class PlayersController {
 
   private isPlaying: boolean = false;
 
-  constructor(scene: Scene, player: Player, stadium: Stadium) {
+  constructor(scene: GameScene, player: Player, stadium: Stadium) {
     this.player = player;
     this.stadium = stadium;
 
@@ -78,14 +78,6 @@ export default class PlayersController {
         continue;
       }
 
-      // simplify curve
-
-
-
-      // const helper = ThreeHelper.createCurveHelper(newRaceCurve);
-      // this.stadium.add(helper);
-      // helper.position.y = 3;
-
       this.bots[botIndex].setRaceCurve(newRaceCurve);
       this.setStartPos(this.bots[botIndex], newRaceCurve);
       botIndex++;
@@ -95,7 +87,6 @@ export default class PlayersController {
 
   private setStartPos(fish: Fish, curve: THREE.CatmullRomCurve3) {
     const startPos = ThreeHelper.getCurvePosition(curve, 0);
-    const startRot = ThreeHelper.getCurveRotation(curve, 0);
 
     startPos.y += 3;
 

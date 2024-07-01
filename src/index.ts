@@ -1,11 +1,11 @@
 import './style.css';
 import * as THREE from 'three'
-import Scene from './scene/scene';
+import { GameScene } from './scene/scene';
 import { Application } from 'pixi.js';
-import { UI } from './ui/ui';
+import UI from './ui/ui';
 
 class Main {
-    private scene!: Scene;
+    private scene!: GameScene;
     private clock: THREE.Clock;
 
     private app!: Application;
@@ -23,7 +23,7 @@ class Main {
     }
 
     private initScene() {
-        this.scene = new Scene(this.ui);
+        this.scene = new GameScene(this.ui);
     }
 
     private initEvents() {
@@ -42,7 +42,7 @@ class Main {
         this.ui = new UI();
         app.stage.addChild(this.ui);
 
-        document.getElementById('game_app')?.appendChild(app.view);
+        document.getElementById('game_app')?.appendChild((app as any).view);
     }
 
     public update() {
@@ -62,8 +62,8 @@ class Main {
         const width = windowWidth * scale;
         const height = windowHeight * scale;
 
-        this.app.renderer.view.style.width = `${windowWidth}px`;
-        this.app.renderer.view.style.height = `${windowHeight}px`;
+        (this.app.renderer.view.style as any).width = `${windowWidth}px`;
+        (this.app.renderer.view.style as any).height = `${windowHeight}px`;
         window.scrollTo(0, 0);
 
         this.app.renderer.resize(width, height);

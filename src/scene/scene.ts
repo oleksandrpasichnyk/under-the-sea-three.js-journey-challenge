@@ -6,15 +6,14 @@ import GUI from 'lil-gui';
 import Stadium from './objects/stadium/stadium';
 import Background from './environment/background';
 import TopWater from './environment/water';
-import { SIZES } from '../config';
-import RendererStats from '@xailabs/three-renderer-stats';
+// import RendererStats from '@xailabs/three-renderer-stats';
 import { LOADER } from '../loader/loader';
 import Test from './test/test';
 import CameraController from './controllers/camera-controller';
 import UnderwaterBubbles from './vfx/bubbles-effect';
 import PlayersController from './controllers/players-controller';
 import { Player } from './objects/fish/player/player';
-import { UI } from '../ui/ui';
+import UI from '../ui/ui';
 
 const CANVAS_ID = 'scene';
 
@@ -23,7 +22,7 @@ const enum CAMERA_MODES {
   ORBIT_CONTROLS = 'ORBIT_CONTROLS',
 }
 
-export default class Scene extends THREE.Scene{
+export class GameScene extends THREE.Scene {
   private canvas!: HTMLElement;
   private renderer!: THREE.WebGLRenderer;
   private ambientLight!: THREE.AmbientLight;
@@ -43,9 +42,7 @@ export default class Scene extends THREE.Scene{
   private cameraController!: CameraController;
   private playersController!: PlayersController;
 
-  private rendererStats!: RendererStats;
-
-  private prewPos = new THREE.Vector3();
+  // private rendererStats!: RendererStats;
 
   private underwaterBubbles!: UnderwaterBubbles;
 
@@ -79,7 +76,7 @@ export default class Scene extends THREE.Scene{
     this.initPlayersController();
     this.setupGUI();
 
-    this.initRendererStats();
+    // this.initRendererStats();
 
     console.timeEnd('init scene')
 
@@ -109,14 +106,14 @@ export default class Scene extends THREE.Scene{
 
   }
 
-  private initRendererStats() {
-    const renderStats = this.rendererStats = new RendererStats();
+//   private initRendererStats() {
+//     const renderStats = this.rendererStats = new RendererStats();
 
-    renderStats.domElement.style.position	= 'absolute'
-    renderStats.domElement.style.left	= '0px'
-    renderStats.domElement.style.bottom	= '0px'
-    document.body.appendChild( renderStats.domElement )
-}
+//     renderStats.domElement.style.position	= 'absolute'
+//     renderStats.domElement.style.left	= '0px'
+//     renderStats.domElement.style.bottom	= '0px'
+//     document.body.appendChild( renderStats.domElement )
+// }
 
   private setupRenderer() {
     this.canvas = document.querySelector(`canvas#${CANVAS_ID}`)!;
@@ -150,10 +147,9 @@ export default class Scene extends THREE.Scene{
     // const gridHelper = new THREE.GridHelper(SIZES.width, SIZES.width * 0.1, 0xff0000, 0xffffff);
     // this.add(gridHelper);
 
-    const ground = this.stadium = new Stadium();
-    ground.setGui(this.gui);
-    this.add(ground);
-    ground.position.y = -4;
+    const stadium = this.stadium = new Stadium();
+    this.add(stadium);
+    stadium.position.y = -4;
     
     const bg = this.bg = new Background();
     this.add(bg)
@@ -285,13 +281,13 @@ export default class Scene extends THREE.Scene{
     if (this.cameraMode === CAMERA_MODES.ORBIT_CONTROLS) {
       this.controls?.update(dt);
     }else if (this.cameraMode === CAMERA_MODES.CONTROLLER) {
-      this.cameraController?.update(dt);
+      this.cameraController?.update();
     }
 
     this.playersController?.update(dt);
 
     this.renderer.render(this, this.camera);
-    this.rendererStats?.update(this.renderer);
+    // this.rendererStats?.update(this.renderer);
 
     if(this.player) {
       this.ui.updateSpeedMeter(this.player?.getRealSpeed());

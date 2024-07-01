@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { FISHES, PIRATES } from '../../loader/models-list';
+import { FISHES } from '../../loader/models-list';
 import TestObject from './test-object';
 
 export default class Test extends THREE.Group {

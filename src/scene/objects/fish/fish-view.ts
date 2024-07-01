@@ -51,7 +51,7 @@ export default class Fish extends THREE.Group {
   private init() {
     this.initView();
 
-    this.racingController = new RacingController(this, this.racingConfig);
+    this.racingController = new RacingController(this);
     this.boundingBox = new THREE.Box3().setFromObject(this.view).getSize(new THREE.Vector3());
   }
 
@@ -97,7 +97,7 @@ export default class Fish extends THREE.Group {
   }
 
   public update(dt: number) {
-    this.racingController.update(dt);
+    this.racingController.update();
 
     this.realSpeed = Math.round(this.position.clone().distanceTo(this.prewPos) * 100);
 
