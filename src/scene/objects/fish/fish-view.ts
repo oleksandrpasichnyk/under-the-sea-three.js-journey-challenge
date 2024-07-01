@@ -28,6 +28,10 @@ export default class Fish extends THREE.Group {
     this.init();
   }
 
+  public getRealSpeed() {
+    return this.realSpeed;
+  }
+
   public getDirection() {
     return new THREE.Vector3(0, 0, -1).applyQuaternion(this.quaternion.clone());
   }

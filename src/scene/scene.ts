@@ -14,6 +14,7 @@ import CameraController from './controllers/camera-controller';
 import UnderwaterBubbles from './vfx/bubbles-effect';
 import PlayersController from './controllers/players-controller';
 import { Player } from './objects/fish/player/player';
+import { UI } from '../ui/ui';
 
 const CANVAS_ID = 'scene';
 
@@ -48,9 +49,12 @@ export default class Scene extends THREE.Scene{
 
   private underwaterBubbles!: UnderwaterBubbles;
 
-  constructor() {
+  private ui: UI;
+
+  constructor(ui: UI) {
     super();
 
+    this.ui = ui;
     this.gui = new GUI();
 
     this.cameraMode = CAMERA_MODES.CONTROLLER;
@@ -79,7 +83,7 @@ export default class Scene extends THREE.Scene{
 
     console.timeEnd('init scene')
 
-    const duration = 4;
+    const duration = 0;
     this.cameraController.startInto(duration);
     setTimeout(() => {
       this.startGame()
@@ -90,6 +94,8 @@ export default class Scene extends THREE.Scene{
     const countdown = 3;
     let count = countdown;
 
+    this.ui.showSpeedMeter();
+
     const interval = setInterval(() => {
       
       if (count === 0) {
@@ -97,7 +103,7 @@ export default class Scene extends THREE.Scene{
         this.playersController.start();
       }
       
-      console.log(count);
+      this.ui.updateCountdown(count);
       count--;
     }, 1000);
 
@@ -286,5 +292,9 @@ export default class Scene extends THREE.Scene{
 
     this.renderer.render(this, this.camera);
     this.rendererStats?.update(this.renderer);
+
+    if(this.player) {
+      this.ui.updateSpeedMeter(this.player?.getRealSpeed());
+    }
   }
 }

@@ -5,9 +5,19 @@
     <link rel="icon" type="image/svg+xml" href="/threejs-icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Three.js + TypeScript + Vite</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: 0x111111;
+            overflow: hidden;
+        }
+    </style>
   </head>
   <body>
-    <canvas id="scene"></canvas>
+    <canvas id="scene" class="ThreeCanvas"></canvas>
+    <div class="app" id="game_app"></div>
     <script type="module" src="/src/index.ts"></script>
   </body>
 </html>

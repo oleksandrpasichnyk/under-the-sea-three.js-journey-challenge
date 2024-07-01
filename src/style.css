@@ -18,6 +18,7 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
+  position: relative;
 }
 
 body,
@@ -25,7 +26,8 @@ html {
   height: 100%;
 }
 
-canvas {
+.ThreeCanvas {
+  position: absolute;
   height: 100%;
   width: 100%;
   outline: none;
@@ -36,8 +38,20 @@ canvas {
     rgb(12, 165, 196) 0%,
     rgba(55, 175, 177, 0.849) 30%,
     rgba(44, 90, 128, 0.885) 80%,
-    rgb(46, 64, 99)
+    #2e4063
   );
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.game_app {
+  position: absolute;
+  /* top: 0; */
+  /* z-index: 999; */
 }
 
 h1 {
