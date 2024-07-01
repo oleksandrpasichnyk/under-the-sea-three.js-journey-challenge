@@ -43,6 +43,7 @@ export class BotController {
 
     if(t <= 1) {
       this._position = ThreeHelper.getCurvePosition(this.racingCurve, t);
+      this._position.y += 3;
       this._rotation = ThreeHelper.getCurveRotation(this.racingCurve, t);
     }
   }

@@ -14,6 +14,8 @@ export default class Fish extends THREE.Group {
   protected viewConfig: ViewConfig;
 
   protected racingController!: RacingController;
+  private prewPos: THREE.Vector3 = new THREE.Vector3();
+  private realSpeed: number = 0;
 
   constructor(racingConfig: RacingConfig | PlayerRacingConfig, viewConfig: ViewConfig) {
     super();
@@ -80,13 +82,16 @@ export default class Fish extends THREE.Group {
   }
 
   private updateAnimation(dt: number) {
-    this.mixer?.setTimeScaleMoveSpeed(this.animationFactor * this.racingController.getRealSpeed() / this.racingConfig.maxSpeed);
+    this.mixer?.setTimeScaleMoveSpeed(this.animationFactor * this.realSpeed / this.racingConfig.maxSpeed);
     this.mixer?.update(dt);
   }
 
   public update(dt: number) {
     this.racingController.update(dt);
-    
+
+    this.realSpeed = Math.round(this.position.clone().distanceTo(this.prewPos) * 100);
     this.updateAnimation(dt);
+
+    this.prewPos = this.position.clone();
   }
 }

@@ -15,26 +15,16 @@ export class Bot extends Fish {
     this.botController = new BotController(BOTS_RACING_CONFIG[botType]);
   }
 
+
   public setRaceCurve(racingCurve: THREE.CatmullRomCurve3) {
     this.botController.setRaceCurve(racingCurve);
   }
 
   public update(dt: number) {
     this.botController.update(dt);
-
-    // const speed = this.botController.getSpeed();
-    // const rotationSpeed = this.botController.getRotationSpeed();
-
-    // this.racingController.setSpeed(speed);
-    // this.racingController.setRotationSpeed(rotationSpeed);
-
-    // this.position.copy(this.botController.getPosition());
-    // this.quaternion.copy(this.botController.getRotation());
-
-    // lerp
+    
     this.position.lerp(this.botController.getPosition(), (this.racingConfig as RacingConfig).lerp);
     this.quaternion.slerp(this.botController.getRotation(), 0.1);
-
 
     super.update(dt);
   }

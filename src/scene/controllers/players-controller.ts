@@ -91,7 +91,7 @@ export default class PlayersController {
     const startPos = ThreeHelper.getCurvePosition(curve, 0);
     const startRot = ThreeHelper.getCurveRotation(curve, 0);
 
-    startPos.y += 5;
+    startPos.y += 3;
 
     fish.position.copy(startPos);
   }
