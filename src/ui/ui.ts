@@ -23,7 +23,7 @@ export default class UI extends Container {
     this.speedMeter.text = value.toFixed(0) + ' km/h';
   }
 
-  public updateCountdown(value: number) {
+  public updateCountdown(value: number | string) {
     this.countdown.text = value.toString();
     
     let duration = 0.8;

@@ -32,6 +32,8 @@ export default class Stadium extends THREE.Group {
   private leftCollider!: THREE.Mesh;
   private rightCollider!: THREE.Mesh;
 
+  private finishPlane!: THREE.Mesh;
+
   constructor() {
     super();
     this.sandColor = 0xcaa341;
@@ -102,6 +104,10 @@ export default class Stadium extends THREE.Group {
     curvePoints.push(curvePoints[1].clone());
 
     return curvePoints;
+  }
+
+  public getFinishPlane() {
+    return this.finishPlane;
   }
 
   private createRoad(spline: THREE.CatmullRomCurve3) {
@@ -192,8 +198,25 @@ export default class Stadium extends THREE.Group {
     this.initGates(centerLineSpline);
     this.initFinishLine(centerLineSpline);
     this.initCollisionBorders(centerLineSpline);
+    this.initFinishPlane(centerLineSpline);
     // this.initTribuneSits(tribunes, centerLineSpline, this.tribuneHeight * 0.2);
     // this.initTribuneSits(tribunes, centerLineSpline, this.tribuneHeight * 0.4);
+  }
+
+  private initFinishPlane(centerLineSpline: THREE.CatmullRomCurve3) {
+    const point = centerLineSpline.getPoint(0);
+
+    const geometry = new THREE.PlaneGeometry( this.roadWidth, 20 );
+    const material = new THREE.MeshBasicMaterial( {color: 0x000000, side: THREE.DoubleSide} );
+    const plane = this.finishPlane = new THREE.Mesh( geometry, material );
+
+    plane.position.copy(point);
+
+    // plane.rotateX(Math.PI * 0.5);
+
+    this.add( plane );
+
+    plane.visible = false;
   }
 
   private initCollisionBorders(centerLineSpline: THREE.CatmullRomCurve3) {

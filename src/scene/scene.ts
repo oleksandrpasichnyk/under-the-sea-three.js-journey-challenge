@@ -25,15 +25,15 @@ const enum CAMERA_MODES {
 export class GameScene extends THREE.Scene {
   private canvas!: HTMLElement;
   private renderer!: THREE.WebGLRenderer;
-  private ambientLight!: THREE.AmbientLight;
-  private directionalLight!: THREE.DirectionalLight;
+  // private ambientLight!: THREE.AmbientLight;
+  // private directionalLight!: THREE.DirectionalLight;
   private camera!: THREE.PerspectiveCamera;
   private controls!: OrbitControls;
   private stats!: Stats;
   private gui!: GUI;
   private water!: TopWater;
   private stadium!: Stadium;
-  private bg!: Background;
+  // private bg!: Background;
   private test!: Test;
   private player!: Player;
 
@@ -53,18 +53,23 @@ export class GameScene extends THREE.Scene {
 
     this.ui = ui;
     this.gui = new GUI();
+    this.gui.hide();
 
     this.cameraMode = CAMERA_MODES.CONTROLLER;
 
     this.init();
   }
 
+  public setResult(res: string) {
+    this.ui.updateCountdown(res);
+  }
+ 
   private async init() {
     this.setupRenderer();
     this.setupLights();
     this.setupCamera();
     this.setupControls();
-    this.setupStats();
+    // this.setupStats();
     this.setupFog();
 
     
@@ -74,13 +79,13 @@ export class GameScene extends THREE.Scene {
     this.setupObjects();
     this.initCameraController();
     this.initPlayersController();
-    this.setupGUI();
+    // this.setupGUI();
 
     // this.initRendererStats();
 
     console.timeEnd('init scene')
 
-    const duration = 0;
+    const duration = 4;
     this.cameraController.startInto(duration);
     setTimeout(() => {
       this.startGame()
@@ -129,18 +134,18 @@ export class GameScene extends THREE.Scene {
   }
 
   private setupLights() {
-    const ambientLight = this.ambientLight = new THREE.AmbientLight('white', 4);
+    const ambientLight = new THREE.AmbientLight('white', 4);
     this.add(ambientLight);
 
-    const directionalLight = this.directionalLight = new THREE.DirectionalLight(0xeeeeee, 6);
+    const directionalLight = new THREE.DirectionalLight(0xeeeeee, 6);
     directionalLight.position.set(100, 100, 150);
     directionalLight.lookAt(0, 0, 0);
     this.add(directionalLight);
 
     // light helper
 
-    const helper = new THREE.DirectionalLightHelper(directionalLight);
-    this.add(helper);
+    // const helper = new THREE.DirectionalLightHelper(directionalLight);
+    // this.add(helper);
   }
 
   private setupObjects() {
@@ -151,7 +156,7 @@ export class GameScene extends THREE.Scene {
     this.add(stadium);
     stadium.position.y = -4;
     
-    const bg = this.bg = new Background();
+    const bg = new Background();
     this.add(bg)
 
     const water = this.water = new TopWater();
@@ -207,63 +212,63 @@ export class GameScene extends THREE.Scene {
     this.playersController = new PlayersController(this, this.player, this.stadium);
   }
 
-  private setupStats() {
-    this.stats = new Stats();
-    document.body.appendChild(this.stats.dom);
-  }
+  // private setupStats() {
+  //   this.stats = new Stats();
+  //   document.body.appendChild(this.stats.dom);
+  // }
 
   private setupFog() {
     this.fog = new THREE.Fog(0x0d4d59, 5, 500);
   }
 
-  private setupGUI() {
-    this.gui.add(this, 'cameraMode', [CAMERA_MODES.CONTROLLER, CAMERA_MODES.ORBIT_CONTROLS]).name('Camera Mode');
+  // private setupGUI() {
+  //   this.gui.add(this, 'cameraMode', [CAMERA_MODES.CONTROLLER, CAMERA_MODES.ORBIT_CONTROLS]).name('Camera Mode');
 
 
-    const sceneFolder = this.gui.addFolder('Scene');
-    sceneFolder.add(this.water, 'visible').name('water');
-    sceneFolder.add(this.stadium, 'visible').name('ground');
-    sceneFolder.add(this.bg, 'visible').name('background');
+  //   const sceneFolder = this.gui.addFolder('Scene');
+  //   sceneFolder.add(this.water, 'visible').name('water');
+  //   sceneFolder.add(this.stadium, 'visible').name('ground');
+  //   sceneFolder.add(this.bg, 'visible').name('background');
 
-    sceneFolder.close();
+  //   sceneFolder.close();
 
-    const lightsFolder = this.gui.addFolder('Lights');
-    lightsFolder.add(this.directionalLight, 'visible').name('directional light');
-    lightsFolder.add(this.directionalLight, 'intensity', 0, 10, 0.1).name('intensity');
-    lightsFolder.addColor(this.directionalLight, 'color').name('color');
-    lightsFolder.add(this.ambientLight, 'visible').name('ambient light');
-    lightsFolder.add(this.ambientLight, 'intensity', 0, 10, 0.1).name('ambientLight intensity');
+  //   const lightsFolder = this.gui.addFolder('Lights');
+  //   lightsFolder.add(this.directionalLight, 'visible').name('directional light');
+  //   lightsFolder.add(this.directionalLight, 'intensity', 0, 10, 0.1).name('intensity');
+  //   lightsFolder.addColor(this.directionalLight, 'color').name('color');
+  //   lightsFolder.add(this.ambientLight, 'visible').name('ambient light');
+  //   lightsFolder.add(this.ambientLight, 'intensity', 0, 10, 0.1).name('ambientLight intensity');
 
-    lightsFolder.close();
+  //   lightsFolder.close();
 
-    const fogFolder = this.gui.addFolder('Fog');
-    // fogFolder.add(this.fog!, 'visible').name('fog');
-    fogFolder.addColor(this.fog!, 'color').name('color');
-    fogFolder.add(this.fog!, 'near', 0, 1000, 1).name('near');
-    fogFolder.add(this.fog!, 'far', 0, 1000, 1).name('far');
-    // switch fog visibility
-    // fogFolder.add(this, 'fog', [null, this.fog]).name('fog').onChange((fog) => {
-    //   this.fog = fog;
-    // });
+  //   const fogFolder = this.gui.addFolder('Fog');
+  //   // fogFolder.add(this.fog!, 'visible').name('fog');
+  //   fogFolder.addColor(this.fog!, 'color').name('color');
+  //   fogFolder.add(this.fog!, 'near', 0, 1000, 1).name('near');
+  //   fogFolder.add(this.fog!, 'far', 0, 1000, 1).name('far');
+  //   // switch fog visibility
+  //   // fogFolder.add(this, 'fog', [null, this.fog]).name('fog').onChange((fog) => {
+  //   //   this.fog = fog;
+  //   // });
 
-    fogFolder.close();
+  //   fogFolder.close();
 
-    this.gui.onFinishChange(() => {
-      const guiState = this.gui.save();
-      localStorage.setItem('guiState', JSON.stringify(guiState));
-    });
+  //   this.gui.onFinishChange(() => {
+  //     const guiState = this.gui.save();
+  //     localStorage.setItem('guiState', JSON.stringify(guiState));
+  //   });
 
-    const guiState = localStorage.getItem('guiState');
-    if (guiState) this.gui.load(JSON.parse(guiState));
+  //   const guiState = localStorage.getItem('guiState');
+  //   if (guiState) this.gui.load(JSON.parse(guiState));
 
-    const resetGui = () => {
-      localStorage.removeItem('guiState');
-      this.gui.reset();
-    };
-    this.gui.add({ resetGui }, 'resetGui').name('RESET');
+  //   const resetGui = () => {
+  //     localStorage.removeItem('guiState');
+  //     this.gui.reset();
+  //   };
+  //   this.gui.add({ resetGui }, 'resetGui').name('RESET');
 
-    // this.gui.close();
-  }
+  //   // this.gui.close();
+  // }
 
   public update(dt: number) {
     this.stats?.update();

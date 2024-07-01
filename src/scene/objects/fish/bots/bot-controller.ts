@@ -39,12 +39,14 @@ export class BotController {
     
     this.prewPos += this._speed;
     
-    const t = this.prewPos / this.racingCurve.getLength();
+    let t = this.prewPos / this.racingCurve.getLength();
 
-    if(t <= 1) {
-      this._position = ThreeHelper.getCurvePosition(this.racingCurve, t);
-      this._position.y += 3;
-      this._rotation = ThreeHelper.getCurveRotation(this.racingCurve, t);
+    if(t > 1) {
+      t = t - 1;
     }
+
+    this._position = ThreeHelper.getCurvePosition(this.racingCurve, t);
+    this._position.y += 3;
+    this._rotation = ThreeHelper.getCurveRotation(this.racingCurve, t);
   }
 }

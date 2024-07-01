@@ -7,6 +7,8 @@ import { BOT_TYPE } from '../objects/fish/fish.types';
 import { GameScene } from '../scene';
 import { Player } from '../objects/fish/player/player';
 
+// const totalCircles = 1;
+
 export default class PlayersController {
   private botsCount: number = 5;
 
@@ -21,6 +23,9 @@ export default class PlayersController {
   private raycaster2: THREE.Raycaster;
 
   private isPlaying: boolean = false;
+
+  // private racesCountData = new Array(this.botsCount + 1).fill(0);
+  // private lastTimeCheck = new Array(this.botsCount + 1).fill(0);
 
   constructor(scene: GameScene, player: Player, stadium: Stadium) {
     this.player = player;
@@ -112,6 +117,7 @@ export default class PlayersController {
     });
 
     this.checkColliders();
+    this.checkFinish();
   }
 
   private checkColliders() {
@@ -147,4 +153,54 @@ export default class PlayersController {
     }
 
   }
+
+  private checkFinish() {
+    // for (let i = 0; i < this.botsCount + 1; i++) {
+    //   const fish = i === this.botsCount ? this.player : this.bots[i];
+    //   this.checkFinishForFish(fish, i);
+    // }
+  }
+
+  // private checkFinishForFish(fish: Fish, index: number) {
+  //   const lastTimeCheck = this.lastTimeCheck[index];
+  //   const currentTime = Date.now();
+
+  //   if (currentTime - lastTimeCheck < 5000) {
+  //     return;
+  //   }
+
+  //   const finishPlane = this.stadium.getFinishPlane();
+
+  //   const playerPos = fish.position;
+  //   const direction = fish.getDirection();
+
+  //   this.raycaster.ray.origin.copy(playerPos);
+  //   this.raycaster.ray.direction.copy(direction);
+
+  //   const intersects = this.raycaster.intersectObject(finishPlane);
+
+  //   if (intersects.length > 0) {
+  //     this.racesCountData[index]++;
+
+  //     if (this.racesCountData[index] >= totalCircles) {
+  //       this.finishRace(fish);
+  //     }
+  //   }
+
+  //   this.lastTimeCheck[index] = currentTime;
+  // }
+
+  // private finishRace(fish: Fish) {
+  //   this.isPlaying = false;
+
+  //   let res = ''
+
+  //   if (fish == this.player) {
+  //     res = 'Player won';
+  //   } else {
+  //     res = 'You lose';
+
+  //     this.scene.setResult(res);
+  //   }
+  // }
 }
