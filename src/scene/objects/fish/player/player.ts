@@ -28,8 +28,8 @@ export class Player extends Fish {
   //   folderFish.close();
   // }
 
-  public onCollidedWithBorder() {
-    this.inputController.onCollidedWithBorder();
+  public onCollidedWithBorder(isBackSide: boolean) {
+    this.inputController.onCollidedWithBorder(isBackSide);
   }
 
   public update(dt: number) {

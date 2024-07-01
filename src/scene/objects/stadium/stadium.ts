@@ -17,7 +17,7 @@ export default class Stadium extends THREE.Group {
   private roadWidth: number;
 
   private tribuneWidth: number = 70;
-  private tribuneHeight: number = 40;
+  private tribuneHeight: number = 50;
 
   private borderWidth: number = 40;
 

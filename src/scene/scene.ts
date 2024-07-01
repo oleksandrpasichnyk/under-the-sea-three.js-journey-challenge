@@ -132,7 +132,7 @@ export default class Scene extends THREE.Scene{
     const water = this.water = new TopWater();
     water.setGui(this.gui);
     this.add(water);
-    water.position.y = 80;
+    water.position.y = 70;
 
     // const test = this.test = new Test();
     // this.add(test);

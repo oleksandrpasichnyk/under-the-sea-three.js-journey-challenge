@@ -26,7 +26,14 @@ export default class TopWater extends THREE.Group {
   }
 
   private init() {
-    const waterGeometry = new THREE.PlaneGeometry( SIZES.width, SIZES.length );
+    const circleShape = new THREE.Shape();
+    circleShape.moveTo( 0, 0 );
+    circleShape.absarc( 0, 0, SIZES.width, 0, Math.PI * 2, false );
+
+    const waterGeometry = new THREE.ShapeGeometry( circleShape );
+
+
+    // const waterGeometry = new THREE.PlaneGeometry( SIZES.width, SIZES.length );
     const texture = ALL_ASSETS.textures['water/water3.jpg'];
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 

@@ -33,8 +33,8 @@ export class InputController {
     return this._rotationSpeed;
   }
 
-  public onCollidedWithBorder() {
-    this._speed = -this.config.breakSpeed * 0.5;
+  public onCollidedWithBorder(isBackSide: boolean) {
+    this._speed = -this.config.breakSpeed * 0.5 * (isBackSide ? -1 : 1);
     this._rotationSpeed = 0;
   }
 

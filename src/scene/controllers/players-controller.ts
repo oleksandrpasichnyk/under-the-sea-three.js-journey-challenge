@@ -18,6 +18,7 @@ export default class PlayersController {
 
   private arrowHelper?: THREE.ArrowHelper;
   private raycaster: THREE.Raycaster;
+  private raycaster2: THREE.Raycaster;
 
   constructor(scene: Scene, player: Player, stadium: Stadium) {
     this.player = player;
@@ -29,8 +30,10 @@ export default class PlayersController {
     this.setupRace();
 
     this.raycaster = new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 0));
-    // this.arrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(), 10, 0xff0000);
-    // this.scene.add(this.arrowHelper);
+    this.raycaster2 = new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 0));
+
+    this.arrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(), 10, 0xff0000);
+    this.scene.add(this.arrowHelper);
   }
 
   private initBots() {
@@ -104,25 +107,36 @@ export default class PlayersController {
   }
 
   private checkColliders() {
-    const { left, right } = this.stadium.getColliders();
-
     const playerPos = this.player.position;
 
     const ray = this.raycaster;
     ray.ray.origin.copy(playerPos);
     ray.ray.direction.copy(this.player.getDirection());
-    const intersects = ray.intersectObjects([left, right]);
+    
+    const ray2 = this.raycaster2;
+    ray2.ray.origin.copy(playerPos);
+    ray2.ray.direction.copy(this.player.getDirection().negate());
+
+    this.checkRay(ray);
+    this.checkRay(ray2, true);
 
     // this.arrowHelper.position.copy(playerPos);
-    // this.arrowHelper.setDirection(this.player.getDirection());
+    // this.arrowHelper.setDirection(this.player.getDirection().negate());
+  }
+
+  private checkRay(ray: THREE.Raycaster, isBack: boolean = false) {
+    const { left, right } = this.stadium.getColliders();
+
+    const intersects = ray.intersectObjects([left, right]);
 
     if (intersects.length > 0) {
 
-      const distanceToCollider = playerPos.distanceTo(intersects[0].point);
+      const distanceToCollider = this.player.position.distanceTo(intersects[0].point);
 
       if (distanceToCollider < 2) {
-        this.player.onCollidedWithBorder();
+        this.player.onCollidedWithBorder(isBack);
       }
     }
+
   }
 }
