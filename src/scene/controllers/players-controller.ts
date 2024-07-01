@@ -5,17 +5,21 @@ import ThreeHelper from '../../helpers/three-hepler';
 import { Bot } from '../objects/fish/bots/bot';
 import { BOT_TYPE } from '../objects/fish/fish.types';
 import Scene from '../scene';
+import { Player } from '../objects/fish/player/player';
 
 export default class PlayersController {
   private botsCount: number = 5;
 
-  private player: Fish;
+  private player: Player;
   private bots: Bot[] = [];
   private stadium: Stadium;
 
   private scene: Scene;
 
-  constructor(scene: Scene, player: Fish, stadium: Stadium) {
+  private arrowHelper?: THREE.ArrowHelper;
+  private raycaster: THREE.Raycaster;
+
+  constructor(scene: Scene, player: Player, stadium: Stadium) {
     this.player = player;
     this.stadium = stadium;
 
@@ -23,6 +27,10 @@ export default class PlayersController {
 
     this.initBots();
     this.setupRace();
+
+    this.raycaster = new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 0));
+    // this.arrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(), 10, 0xff0000);
+    // this.scene.add(this.arrowHelper);
   }
 
   private initBots() {
@@ -43,26 +51,26 @@ export default class PlayersController {
 
     const totalPlayersCount = this.botsCount + 1;
     const playerPositionIndex = 3;
-    
+
     const step = (roadWidth / (totalPlayersCount + 1));
 
     let botIndex = 0;
 
-    for (let i = 0; i < totalPlayersCount; i++) {      
+    for (let i = 0; i < totalPlayersCount; i++) {
       const offset = -roadWidth * 0.5 + step * (i + 1);
       const raceCurve = ThreeHelper.getPerpendicularCurve(centerCurve, offset);
-      
-      const points = raceCurve.getPoints(50);
-      const newRaceCurve = new THREE.CatmullRomCurve3(points); 
 
-      if(i === playerPositionIndex) {
+      const points = raceCurve.getPoints(50);
+      const newRaceCurve = new THREE.CatmullRomCurve3(points);
+
+      if (i === playerPositionIndex) {
         this.setStartPos(this.player, raceCurve);
 
         continue;
       }
 
       // simplify curve
-      
+
 
 
       // const helper = ThreeHelper.createCurveHelper(newRaceCurve);
@@ -87,9 +95,34 @@ export default class PlayersController {
 
   public update(dt: number) {
     this.player.update(dt);
-    
+
     this.bots.forEach(bot => {
       bot.update(dt);
     });
+
+    this.checkColliders();
+  }
+
+  private checkColliders() {
+    const { left, right } = this.stadium.getColliders();
+
+    const playerPos = this.player.position;
+
+    const ray = this.raycaster;
+    ray.ray.origin.copy(playerPos);
+    ray.ray.direction.copy(this.player.getDirection());
+    const intersects = ray.intersectObjects([left, right]);
+
+    // this.arrowHelper.position.copy(playerPos);
+    // this.arrowHelper.setDirection(this.player.getDirection());
+
+    if (intersects.length > 0) {
+
+      const distanceToCollider = playerPos.distanceTo(intersects[0].point);
+
+      if (distanceToCollider < 2) {
+        this.player.onCollidedWithBorder();
+      }
+    }
   }
 }

@@ -24,6 +24,10 @@ export default class Fish extends THREE.Group {
     this.init();
   }
 
+  public getDirection() {
+    return new THREE.Vector3(0, 0, -1).applyQuaternion(this.quaternion.clone());
+  }
+
   get width() {
     return this.boundingBox.x;
   }

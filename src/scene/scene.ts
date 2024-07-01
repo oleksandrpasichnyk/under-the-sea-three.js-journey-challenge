@@ -189,7 +189,7 @@ export default class Scene extends THREE.Scene{
   }
 
   private setupFog() {
-    this.fog = new THREE.Fog(0x001e57, 80, SIZES.length);
+    this.fog = new THREE.Fog(0x0d4d59, 5, 500);
   }
 
   private setupGUI() {
@@ -218,9 +218,9 @@ export default class Scene extends THREE.Scene{
     fogFolder.add(this.fog!, 'near', 0, 1000, 1).name('near');
     fogFolder.add(this.fog!, 'far', 0, 1000, 1).name('far');
     // switch fog visibility
-    fogFolder.add(this, 'fog', [null, this.fog]).name('fog').onChange((fog) => {
-      this.fog = fog;
-    });
+    // fogFolder.add(this, 'fog', [null, this.fog]).name('fog').onChange((fog) => {
+    //   this.fog = fog;
+    // });
 
     fogFolder.close();
 

@@ -28,6 +28,10 @@ export class Player extends Fish {
   //   folderFish.close();
   // }
 
+  public onCollidedWithBorder() {
+    this.inputController.onCollidedWithBorder();
+  }
+
   public update(dt: number) {
     this.inputController.checkControls(dt);
 

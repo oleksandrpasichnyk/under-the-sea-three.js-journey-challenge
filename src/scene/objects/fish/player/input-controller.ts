@@ -33,6 +33,11 @@ export class InputController {
     return this._rotationSpeed;
   }
 
+  public onCollidedWithBorder() {
+    this._speed = -this.config.breakSpeed * 0.5;
+    this._rotationSpeed = 0;
+  }
+
   public checkControls(dt: number) {    
     const { maxSpeed, acceleration, deceleration, maxRotationSpeed, rotationAcceleration,
       rotationDeceleration, breakSpeed, rotationBreakSpeed } = this.config;

@@ -1,5 +1,6 @@
 import { FISHES } from "../../../../loader/models-list";
 import { BOT_TYPE } from "../fish.types"
+import { PLAYER_VIEW_CONFIG } from "../player/player-config";
 
 export const BOTS_RACING_CONFIG = {
   [BOT_TYPE.ONE]: {
@@ -30,6 +31,9 @@ export const BOTS_RACING_CONFIG = {
 }
 
 const randomModels = [...FISHES].sort(() => Math.random() - 0.5).slice(0, 5);
+
+// const playerModel = PLAYER_VIEW_CONFIG.modelName;
+// randomModels.indexOf(playerModel) > -1 && randomModels.splice(randomModels.indexOf(playerModel), 1);
 
 export const BOTS_VIEW_CONFIG = {
   [BOT_TYPE.ONE]: {

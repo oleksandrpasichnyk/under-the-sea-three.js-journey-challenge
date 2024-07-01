@@ -32,6 +32,9 @@ export default class Stadium extends THREE.Group {
 
   private centerCurve!: THREE.CatmullRomCurve3;
 
+  private leftCollider!: THREE.Mesh;
+  private rightCollider!: THREE.Mesh;
+
   constructor() {
     super();
     this.sandColor = 0xcaa341;
@@ -62,6 +65,13 @@ export default class Stadium extends THREE.Group {
     };
 
     this.init();
+  }
+
+  public getColliders() {
+    return {
+      left: this.leftCollider,
+      right: this.rightCollider,
+    }
   }
 
   public getRoadWidth() {
@@ -189,8 +199,60 @@ export default class Stadium extends THREE.Group {
 
     this.initGates(tribunes, centerLineSpline);
     this.initFinishLine(centerLineSpline);
+    this.initCollisionBorders(centerLineSpline);
     // this.initTribuneSits(tribunes, centerLineSpline, this.tribuneHeight * 0.2);
     // this.initTribuneSits(tribunes, centerLineSpline, this.tribuneHeight * 0.4);
+  }
+
+  private initCollisionBorders(centerLineSpline: THREE.CatmullRomCurve3) {
+    const curveLeft = ThreeHelper.getPerpendicularCurve(centerLineSpline, -this.roadWidth * 0.5 - 1);
+    const curveRight = ThreeHelper.getPerpendicularCurve(centerLineSpline, this.roadWidth * 0.5 + 1);
+
+    // const pointsLeft = curveLeft.getPoints(200);
+    // const pointsRight = curveRight.getPoints(200);
+
+    const w = 1;
+    const h = 20;
+
+    const shape = new THREE.Shape();
+    shape.moveTo( -h * 0.5, w * 0.5 );
+    shape.lineTo( h * 0.5, w * 0.5 );
+    shape.lineTo( h * 0.5, -w * 0.5 );
+    shape.lineTo( -h * 0.5, -w * 0.5 );
+
+
+    const extrudeSettingsLeft = {
+      steps: 200,
+      bevelEnabled: false,
+      extrudePath: curveLeft,
+    };
+
+    const extrudeSettingsRight = {
+      steps: 200,
+      bevelEnabled: false,
+      extrudePath: curveRight,
+    };
+    
+
+    const geometryLeft = new THREE.ExtrudeGeometry( shape, extrudeSettingsLeft );
+    geometryLeft.translate(0, 2, 0);
+
+    const geometryRight = new THREE.ExtrudeGeometry( shape, extrudeSettingsRight );
+    geometryRight.translate(0, 2, 0);
+
+    const material = new THREE.MeshLambertMaterial( { color: 0x000000, wireframe: false } );
+
+    const meshLeft = new THREE.Mesh( geometryLeft, material );
+    const meshRight = new THREE.Mesh( geometryRight, material );
+
+    this.add( meshLeft );
+    this.add( meshRight );
+
+    this.leftCollider = meshLeft;
+    this.rightCollider = meshRight;
+
+    meshLeft.visible = false;
+    meshRight.visible = false;
   }
 
   private initTribuneSits(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3, y: number) {
