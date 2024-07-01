@@ -41,7 +41,7 @@ const FISHES = [
   "Puffer.glb",
   "RedSnapper.glb",
   "RoyalGramma.glb",
-  "Shark.glb",
+  // "Shark.glb",
   "Sunfish.glb",
   "Swordfish.glb",
   "Tang.glb",

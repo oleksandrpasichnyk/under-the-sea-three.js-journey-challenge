@@ -11,6 +11,7 @@ import Fence from './fence';
 import { ALL_ASSETS } from '../../../loader/loader';
 import { Gates } from './gates';
 import { TribuneSits } from './tribune-sits';
+import Finish from './finish';
 
 export default class Stadium extends THREE.Group {
   private roadWidth: number;
@@ -202,21 +203,9 @@ export default class Stadium extends THREE.Group {
     const zeroPoint = centerLineSpline.getPointAt(0);
     const finishLinePoint = zeroPoint.clone();
 
-    const width = 10;
-
-    const texture = ALL_ASSETS.textures['finish.png'];
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(this.roadWidth * 0.2, width * 0.2);
-
-    const material = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide } );
-    const geometry = new THREE.PlaneGeometry( this.roadWidth, width );
-    const finishLine = new THREE.Mesh( geometry, material );
-
-    finishLine.position.copy(finishLinePoint);
-    finishLine.position.y += 2.5;
-    finishLine.rotateX(Math.PI * 0.5);
-
-    this.add(finishLine);
+    const finish = new Finish(this.roadWidth);
+    finish.position.copy(finishLinePoint);
+    this.add(finish);
   }
 
   private initGates(tribunes: THREE.Mesh, centerLineSpline: THREE.CatmullRomCurve3) {

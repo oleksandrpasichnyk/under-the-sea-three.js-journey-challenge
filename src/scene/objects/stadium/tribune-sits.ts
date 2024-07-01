@@ -1,10 +1,15 @@
 import * as THREE from 'three';
 import ThreeHelper from '../../../helpers/three-hepler';
+import { FISHES } from '../../../loader/models-list';
 
 export class TribuneSits extends THREE.Group {
   private tribune: THREE.Object3D;
   private curve: THREE.CatmullRomCurve3;
   private posY: number;
+
+  private count = 160;
+  private sitsMatrix!: THREE.Matrix4;
+  private sitsMesh!: THREE.InstancedMesh;
 
   constructor(curve: THREE.CatmullRomCurve3, tribune: THREE.Object3D, posY: number = 0) {
     super();
@@ -17,9 +22,19 @@ export class TribuneSits extends THREE.Group {
   }
 
   private init() {
+    this.initSits();
+
+    // FISHES.forEach((fish, i) => {
+    //   this.initVisitors(fish);
+    // });
+
+    // this.initVisitors();
+  }
+
+  private initSits() {
     const curve = this.curve;
     
-    const count = 170;
+    const count = this.count;
     const points = curve.getPoints(count);
     
     const view = ThreeHelper.createModelView('models/pirates/Environment_Dock.gltf');
@@ -30,10 +45,10 @@ export class TribuneSits extends THREE.Group {
     const s = 6;
 
     if(geometry && material) {
-      const sticksMesh = new THREE.InstancedMesh(geometry, material, count);
-      this.add(sticksMesh);
+      const sitsMesh = this.sitsMesh = new THREE.InstancedMesh(geometry, material, count);
+      this.add(sitsMesh);
 
-      const sitsMatrix = new THREE.Matrix4();
+      const sitsMatrix = this.sitsMatrix = new THREE.Matrix4();
       let index = 0;
 
       for (let i = 0; i < count; i++) {
@@ -53,7 +68,7 @@ export class TribuneSits extends THREE.Group {
             new THREE.Vector3(s, s, s)
           );
           
-          sticksMesh.setMatrixAt(index++, sitsMatrix);
+          sitsMesh.setMatrixAt(index++, sitsMatrix);
         }
       }
     }
@@ -83,5 +98,44 @@ export class TribuneSits extends THREE.Group {
 
     return null;
     
-  } 
+  }
+
+  private initVisitors(name: string) {
+    const view = ThreeHelper.createModelView(name);
+
+    const geometry = ThreeHelper.findGeometry(view);
+    const material = ThreeHelper.findMaterial(view);
+
+    const counts = this.count;
+
+    if(geometry && material) {
+      const visitorsMesh = new THREE.InstancedMesh(geometry, material, counts);
+      this.add(visitorsMesh);
+
+      const visitorsMatrix = new THREE.Matrix4();
+      let index = 0;
+
+      const tempMatrix = new THREE.Matrix4();
+      const tempQuaternion = new THREE.Quaternion();
+      const tempScale = new THREE.Vector3();
+
+      for (let i = 0; i < counts; i++) {
+        this.sitsMesh.getMatrixAt(i, tempMatrix);
+        const position = new THREE.Vector3();
+        tempMatrix.decompose(position, tempQuaternion, tempScale);
+        
+        position.y += 10;
+
+        visitorsMatrix.identity().compose(
+          position,
+          new THREE.Quaternion(),
+          new THREE.Vector3(100, 100, 100)
+        );
+
+        visitorsMesh.setMatrixAt(index++, visitorsMatrix);
+      }
+
+      visitorsMesh.instanceMatrix.needsUpdate = true;
+    }
+  }
 }

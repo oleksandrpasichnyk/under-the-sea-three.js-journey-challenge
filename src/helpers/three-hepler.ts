@@ -3,10 +3,6 @@ import { ALL_ASSETS } from '../loader/loader';
 import cloneGltf from './three-clone-gltf';
 
 export default class ThreeHelper {
-  public static getBoundingBox(view: THREE.Object3D) {
-    
-  }
-
   public static makeModelDoubleSide(view: THREE.Object3D) {
     view.traverse((child: any) => {
       if (child.isMesh) {
@@ -129,5 +125,10 @@ export default class ThreeHelper {
     const angle = Math.atan2(tangent.x, tangent.z);
 
     return new THREE.Quaternion().setFromAxisAngle(axis, angle);
+  }
+
+  static getBoundingBox(view: THREE.Object3D) {
+    const box = new THREE.Box3().setFromObject(view);
+    return box.getSize(new THREE.Vector3());
   }
 }

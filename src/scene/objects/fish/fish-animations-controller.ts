@@ -62,7 +62,7 @@ export class FishAnimationsController {
     this.currentAnimation = animation;
 
     const action: THREE.AnimationAction = this.getActionByKey(animation);
-    action.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, loop ? Infinity : 1);
+    action?.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, loop ? Infinity : 1);
     
     if (!loop) {
       action.clampWhenFinished = true;
@@ -119,7 +119,7 @@ export class FishAnimationsController {
       const weight: number = key === this.currentAnimation ? 1 : 0;
 
       this.setWeight(actionData, weight);
-      actionData.play();
+      actionData?.play();
     }
   }
 
